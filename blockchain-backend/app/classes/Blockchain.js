@@ -49,7 +49,7 @@ module.exports = class BlockChain {
         return this.blocks[index];
     }
 
-    getBlocks () {
+    getBlocks() {
         return this.blocks;
     }
 };

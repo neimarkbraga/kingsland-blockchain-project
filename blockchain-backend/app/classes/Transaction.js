@@ -40,7 +40,7 @@ module.exports = class Transaction {
     }
 
     isConfirmed() {
-        return this.minedInBlockIndex  == true &&
+        return this.minedInBlockIndex != 0 &&
                this.transferSuccessful == true;
     }
 
@@ -52,9 +52,9 @@ module.exports = class Transaction {
                this.dateCreated &&
                this.data &&
                this.senderPubkey &&
-               this.transactionData &&
+               this.transactionDataHash &&
                this.senderSignature &&
-               this.minedInBlockIndex  == false &&
+               this.minedInBlockIndex  == 0 &&
                this.transferSuccessful == false;
     }
 };

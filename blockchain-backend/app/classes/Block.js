@@ -2,7 +2,7 @@ const utils = require('../libraries/utils');
 
 module.exports = class Block {
     constructor(index = 0,
-                transactions = [],
+                transactions = [], // hardcode Transaction Class instances here to debug
                 difficulty = 0,
                 prevBlockHash = undefined,
                 minedBy = 0,
@@ -41,14 +41,14 @@ module.exports = class Block {
     }
 
     getConfirmedTransactions() {
-        return transactions.filter((transactions) => {
-            return transactions.isConfirmed();
+        return this.transactions.filter((transaction) => {
+            return transaction.isConfirmed();
         });
     }
 
     getPendingTransactions() {
-        return transactions.filter((transactions) => {
-            return transactions.isPending();
+        return this.transactions.filter((transaction) => {
+            return transaction.isPending();
         });
     }
 
