@@ -39,4 +39,18 @@ module.exports = class Block {
     getConfirmedTransactions() {
         return 0;
     }
+
+    toJSON() {
+        return {
+            index:          this.index,
+            transactions:   this.transactions,
+            difficulty:     this.difficulty,
+            prevHash:       this.prevHash,
+            minedBy:        this.minedBy,
+            blockDataHash:  this.blockDataHash,
+            nonce:          this.nonce,
+            dateCreated:    this.dateCreated,
+            blockHash:      this.blockHash
+        }
+    }
 };

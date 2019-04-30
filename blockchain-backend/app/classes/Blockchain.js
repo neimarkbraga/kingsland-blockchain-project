@@ -3,7 +3,7 @@ const Block = require("./Block");
 module.exports = class BlockChain {
 
     constructor() {
-        this.blocks = []; //genesis block inside
+        this.blocks = [this.createGenesisBlock()]; //genesis block inside
         this.pendingTransactions = [];
         this.currentDifficulty = 0;
         this.miningJobs = [] //map
