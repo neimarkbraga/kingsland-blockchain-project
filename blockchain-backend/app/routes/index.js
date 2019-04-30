@@ -7,7 +7,7 @@ app.get('/test', async (req, res) => {
 });
 
 app.get('/info', async (req, res) => {
-    res.json(APP_NODE);
+    res.json(APP_NODE.toJSON());
 });
 
 module.exports = app;

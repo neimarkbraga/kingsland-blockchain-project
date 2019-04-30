@@ -17,4 +17,13 @@ module.exports = class Node {
     getPeers() {
         return 0;
     }
+
+    toJSON() {
+        return {
+           nodeId: this.nodeId,
+           selfUrl: this.selfUrl,
+           peers: this.peers,
+           chain: this.chain
+        }
+    }
 };

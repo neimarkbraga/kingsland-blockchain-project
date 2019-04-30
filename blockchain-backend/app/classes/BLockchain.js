@@ -1,4 +1,4 @@
-
+const Block = require("./Block")
 
 module.exports = class BlockChain {
 
@@ -9,8 +9,16 @@ module.exports = class BlockChain {
         this.miningJobs = [] //map
     }
 
+    createGenesisBlock() {
+        return new Block();
+    }
+
     resetChain() {
         this.blocks = [];
+    }
+
+    getBlockByIndex(index) {
+        return blocks[index];
     }
 
     getBlocks (params) {
