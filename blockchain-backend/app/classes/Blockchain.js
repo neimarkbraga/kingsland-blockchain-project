@@ -5,8 +5,7 @@ const config = require('../../config');
 module.exports = class BlockChain {
 
     constructor() {
-        this.genesisBlock = BlockChain.createGenesisBlock();
-        this.blocks = [this.genesisBlock];
+        this.blocks = [BlockChain.createGenesisBlock()];
         this.pendingTransactions = [];
         this.currentDifficulty = 0;
         this.miningJobs = [] //map
@@ -39,11 +38,6 @@ module.exports = class BlockChain {
             undefined               // blockHash
         );
     }
-
-    resetChain() {
-        this.blocks = [this.genesisBlock];
-    }
-
 
     getBlockByIndex(index) {
         return this.blocks[index];

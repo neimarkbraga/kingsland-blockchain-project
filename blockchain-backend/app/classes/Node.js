@@ -14,9 +14,12 @@ module.exports = class Node {
         return this.chain;
     }
 
-
     getPeers() {
         return 0;
+    }
+
+    resetChain() {
+        this.chain = new BlockChain();
     }
 
     toJSON() {

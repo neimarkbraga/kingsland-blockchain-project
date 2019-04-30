@@ -6,7 +6,7 @@ let app = express.Router();
 // endpoints here!
 app.get("/reset-chain", (req, res) => {
 
-    globals.node.getChain().resetChain();
+    globals.node.resetChain();
 
     //TODO: Check If All Transactions and balances will be lost (except Genesis Transactions)
     //TODO: Peers maintains connections
