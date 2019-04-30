@@ -11,7 +11,5 @@ module.exports = class Transaction {
         this.senderSignature     = []; // array
         this.minedInBlockIndex   = 0;
         this.transferSuccessful  = false;
-
-
     }
 };

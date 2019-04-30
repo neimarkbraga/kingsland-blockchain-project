@@ -4,7 +4,7 @@ const Node = require('./app/classes/Node');
 require('dotenv').config();
 
 
-APP_NODE = new Node("Sample About", "Sample Node Url");
+APP_NODE = new Node("Sample Node Url");
 
 
 // init app

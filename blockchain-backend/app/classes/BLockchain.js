@@ -3,8 +3,10 @@
 module.exports = class BlockChain {
 
     constructor() {
-        this.id = 0;
         this.blocks = []; //genesis block inside
+        this.pendingTransactions = [];
+        this.currentDifficulty = 0;
+        this.miningJobs = [] //map
     }
 
     resetChain() {
