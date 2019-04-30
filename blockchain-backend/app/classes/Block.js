@@ -32,13 +32,15 @@ module.exports = class Block {
         return 0;
     }
 
-    getPendingTransactions() {
-        return 0;
-    }
-
     getConfirmedTransactions() {
         return transactions.filter((transactions) => {
-            return transactions.isConfirmed()
+            return transactions.isConfirmed();
+        });
+    }
+
+    getPendingTransactions() {
+        return transactions.filter((transactions) => {
+            return transactions.isPending();
         });
     }
 

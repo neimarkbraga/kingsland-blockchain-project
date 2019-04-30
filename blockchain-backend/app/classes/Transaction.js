@@ -33,4 +33,18 @@ module.exports = class Transaction {
         return this.minedInBlockIndex  == true &&
                this.transferSuccessful == true;
     }
+
+    isPending() {
+        return this.from &&
+               this.to &&
+               this.value &&
+               this.fee &&
+               this.dateCreated &&
+               this.data &&
+               this.senderPubkey &&
+               this.transactionData &&
+               this.senderSignature &&
+               this.minedInBlockIndex  == false &&
+               this.transferSuccessful == false;
+    }
 };
