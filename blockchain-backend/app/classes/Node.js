@@ -10,6 +10,10 @@ module.exports = class Node {
         this.chain   = new BlockChain();
     }
 
+    getChain() {
+        return this.chain;
+    }
+
 
     getPeers() {
         return 0;

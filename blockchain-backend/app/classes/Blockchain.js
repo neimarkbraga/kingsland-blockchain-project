@@ -3,7 +3,8 @@ const Block = require("./Block");
 module.exports = class BlockChain {
 
     constructor() {
-        this.blocks = [this.createGenesisBlock()]; //genesis block inside
+        this.genesisBlock = this.createGenesisBlock();
+        this.blocks = [this.genesisBlock];
         this.pendingTransactions = [];
         this.currentDifficulty = 0;
         this.miningJobs = [] //map
@@ -14,7 +15,7 @@ module.exports = class BlockChain {
     }
 
     resetChain() {
-        this.blocks = [];
+        this.blocks = [this.genesisBlock];
     }
 
 
