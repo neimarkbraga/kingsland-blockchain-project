@@ -1,6 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const Node = require('./app/classes/Node');
 require('dotenv').config();
+
+
+APP_NODE = new Node("Sample About", "Sample Node Url");
 
 
 // init app
@@ -11,7 +15,6 @@ let app = express();
 // parse body
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-
 
 // init routes
 app.use('/', require('./app/routes/index'));
