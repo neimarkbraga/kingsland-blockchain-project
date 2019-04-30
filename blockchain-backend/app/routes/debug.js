@@ -1,5 +1,6 @@
 const express = require('express');
 const globals = require('../../globals');
+const utils = require('../libraries/utils');
 
 let app = express.Router();
 
@@ -14,6 +15,18 @@ app.get("/reset-chain", (req, res) => {
     res.status(200);
     res.json({"msg": "The chain was reset to its Genesis Block"});
 
+});
+
+
+app.get('/random-wallet', (req, res) => {
+    let private_key = utils.generatePrivateKey();
+    let public_key  = utils.privateKeyToPublicKey(private_key);
+    let address = utils.publicKeyToAddress(public_key);
+    res.json({
+        private_key,
+        public_key,
+        address
+    });
 });
 
 module.exports = app;
