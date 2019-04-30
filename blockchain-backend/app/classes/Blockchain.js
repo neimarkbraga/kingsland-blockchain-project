@@ -8,7 +8,7 @@ module.exports = class BlockChain {
         this.blocks = [BlockChain.createGenesisBlock()];
         this.pendingTransactions = [];
         this.currentDifficulty = 0;
-        this.miningJobs = [] //map
+        this.miningJobs = [] //map <blockDataHash -> block>
     }
 
     static createGenesisBlock() {
