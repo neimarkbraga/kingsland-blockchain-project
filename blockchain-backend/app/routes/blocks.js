@@ -1,15 +1,16 @@
 const express = require('express');
+const globals = require('../../globals');
 
 let app = express.Router();
 
 // endpoints here!
 app.get('/', (req, res) => {
-    res.json(APP_NODE.chain.blocks);
+    res.json(globals.node.chain.getBlocks());
 });
 
 app.get('/:index', (req, res) => {
     let index = parseInt(req.params.index || 0) || 0;
-    let block = APP_NODE.chain.blocks[index];
+    let block = globals.node.chain.getBlockByIndex(index);
 
     if(block) res.json(block);
     else {

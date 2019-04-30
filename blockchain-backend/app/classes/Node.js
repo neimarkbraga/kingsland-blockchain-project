@@ -7,12 +7,9 @@ module.exports = class Node {
         this.nodeId  = utils.sha256(new Date().getTime() + Math.random());
         this.selfUrl = selfUrl;
         this.peers   = [];
-        this.chain   = new BlockChain;
+        this.chain   = new BlockChain();
     }
 
-    getAllBalances() {
-        return 0;
-    }
 
     getPeers() {
         return 0;
