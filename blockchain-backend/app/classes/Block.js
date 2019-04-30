@@ -37,7 +37,9 @@ module.exports = class Block {
     }
 
     getConfirmedTransactions() {
-        return 0;
+        return transactions.filter((transactions) => {
+            return transactions.isConfirmed()
+        });
     }
 
     toJSON() {

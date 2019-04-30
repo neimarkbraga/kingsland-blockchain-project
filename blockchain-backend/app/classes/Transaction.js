@@ -28,4 +28,9 @@ module.exports = class Transaction {
             senderPubkey:   this.senderPubkey
         }));
     }
+
+    isConfirmed() {
+        return this.minedInBlockIndex  == true &&
+               this.transferSuccessful == true;
+    }
 };
