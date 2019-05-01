@@ -27,5 +27,31 @@ module.exports = {
     },
     publicKeyToAddress(publicKey) {
         return this.ripemd160(publicKey);
+    },
+    isValidPublicKey(key) {
+        if(typeof key !== 'string') return false;
+        if(key.length !== 65) return false;
+        return this.isHexString(key);
+    },
+    isValidAddress(address) {
+        if(typeof address !== 'string') return false;
+        if(address.length !== 40) return false;
+        return this.isHexString(address);
+    },
+    isHexString(hex) {
+        return /^[0-9a-f]+$/.test(hex);
+    },
+    isISO8601Date(date) {
+        if(typeof date !== 'string') return false;
+        return /^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(.[0-9]+)?(Z)?$/.test(date);
+    },
+    isValidSignature(data, publicKey, signature) {
+        let keyPair = secp256k1.keyFromPublic(this.getPublicKeyPoint(publicKey));
+        return keyPair.verify(data, {r: signature[0], s: signature[1]});
+    },
+    getPublicKeyPoint(compressedPublicKey) {
+        let x = compressedPublicKey.substring(0, 64);
+        let y = compressedPublicKey.substring(64);
+        return secp256k1.curve.pointFromX(x, parseInt(y));
     }
 };

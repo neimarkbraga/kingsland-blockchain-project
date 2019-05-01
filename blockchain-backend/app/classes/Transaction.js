@@ -26,7 +26,6 @@ module.exports = class Transaction {
         this.minedInBlockIndex      = minedInBlockIndex;
         this.transferSuccessful     = transferSuccessful;
     }
-
     getDataHash() {
         return utils.sha256(JSON.stringify({
             from:           this.from,
@@ -37,6 +36,10 @@ module.exports = class Transaction {
             data:           this.data,
             senderPubKey:   this.senderPubKey
         }));
+    }
+
+    isValidSignature() {
+        return utils.isValidSignature(this.transactionDataHash, this.senderPubKey, this.senderSignature);
     }
 
     isConfirmed() {
