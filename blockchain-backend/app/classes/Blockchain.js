@@ -1,4 +1,5 @@
 const Block = require("./Block");
+const Miner = require("./Miner");
 const Transaction = require('./Transaction');
 const config = require('../../config');
 const utils = require('../libraries/utils');
@@ -9,7 +10,7 @@ module.exports = class BlockChain {
         this.blocks = [BlockChain.createGenesisBlock()];
         this.pendingTransactions = [];
         this.currentDifficulty = 0;
-        this.miningJobs = [] //map <blockDataHash -> block>
+        this.miningJobs = new Map; //map <blockDataHash -> block>
     }
 
     static createGenesisBlock() {
@@ -91,7 +92,32 @@ module.exports = class BlockChain {
         return undefined;
     }
 
+    sendMiningJob(minerAddress) {
+        if (!this.pendingTransactions) {
+            return;
+        }
 
+        let candidateBlock = new Block(
+                                        this.blocks.length + 1,   // index
+                                        this.pendingTransactions, // transactions
+                                        this.currentDifficulty,   // difficulty
+                                        "prevBlockHash",          // prevBlockHash
+                                        0,                        // minedBy
+                                        "blockDataHash",          // blockDataHash
+                                        0,                        // nonce
+                                        new Date(),               // dateCreated
+                                        undefined                 // blockHash
+                                      );
+
+        let miner = new Miner(
+                                minerAddress,
+                                this.currentDifficulty,
+                                candidateBlock.getDataHash(),
+                             );
+
+        // ADD TO MINING JOBS
+        // this.miningJobs.set(this.candidateBlock.getDataHash(), this.blocks.length + 1);
+    }
 
     getBlockByIndex(index) {
         return this.blocks[index];
