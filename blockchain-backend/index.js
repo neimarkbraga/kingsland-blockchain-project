@@ -1,9 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-require('dotenv').config();
+const commander = require('commander');
+const config = require('./config');
 
 // init app
 let app = express();
+
+// process.argv
+commander.option('-h, --host [value]');
+commander.option('-p, --port [value]');
+commander.parse(process.argv);
+config.node_host = commander.host || config.node_host;
+config.node_port = commander.port || config.node_port;
 
 
 // parse body
@@ -22,7 +30,7 @@ app.use('/mining', require('./app/routes/mining'));
 
 
 // start server
-let server = app.listen(process.env.APP_HTTP_PORT || 5555, () => {
+let server = app.listen(commander.port || config.node_port, () => {
     let address = server.address();
     console.log(`Server running @ port ${address.port}`);
 });

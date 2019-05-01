@@ -1,5 +1,6 @@
+const config = require('./config');
 const Node = require('./app/classes/Node');
 
 module.exports = {
-    node: new Node(`http://127.0.0.1:5555`)
+    node: new Node(`${config.node_protocol}://${config.node_host}:${config.node_port}`)
 };
