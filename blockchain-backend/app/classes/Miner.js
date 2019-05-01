@@ -3,11 +3,13 @@ const Block = require('./Block');
 const Transaction = require('./Transaction');
 
 module.exports = class Miner {
-    constructor(address, difficulty, blockDataHash) {
+    constructor(address, difficulty, currBlockIndex, prevBlockHash, pendingTxs) {
         this.address = address;
         this.difficulty = difficulty;
-        this.blockDataHash = blockDataHash;
-        this.balance = 0 // to clarify where to put Reward Coins
+        this.currBlockIndex = currBlockIndex;
+        this.prevBlockHash = prevBlockHash;
+        this.pendingTxs = pendingTxs;
+
         this.mineBlock();
     }
 
@@ -31,12 +33,12 @@ module.exports = class Miner {
         let coinbaseTx = Transaction.createCoinbaseTx();
 
         return new Block(
-                            'get latest index + 1', //index
-                            [coinbaseTx],
+                            this.currBlockIndex,
+                            [coinbaseTx, this.pendingTxs],
                             this.difficulty,
-                            'get prevBlockHash',
+                            this.prevBlockHash,
                             this.address,
-                            this.blockDataHash,
+                            0,
                             nonce,
                             new Date(),
                             blockHash

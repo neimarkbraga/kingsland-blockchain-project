@@ -105,6 +105,10 @@ module.exports = class BlockChain {
         return transactions;
     }
 
+    getPendingTransactions() {
+        return this.pendingTransactions;
+    }
+
     getTransactionByDataHash(hash) {
         let transactions = this.getAllTransactions();
         for(let i = 0; i < transactions.length; i++) {
@@ -167,6 +171,11 @@ module.exports = class BlockChain {
             confirmedBalance: 0,
             pendingBalance: 0
         };
+    }
+
+    getLatestBlock() {
+        let currIndex = this.blocks.length - 1;
+        return this.blocks[currIndex];
     }
 
     sendMiningJob(minerAddress) {

@@ -33,7 +33,17 @@ app.get('/random-wallet', (req, res) => {
 });
 
 app.get('/mine/:minerAddress/:difficulty', (req, res) => {
-    debugMiner = new Miner(req.params.minerAddress, req.params.difficulty, 'BlockDataHash');
+    let currBlockIndex = globals.node.getChain().blocks.length + 1;
+    let latestBlock = globals.node.getChain().getLatestBlock();
+
+    let pendingTxs  = globals.node.getChain().getPendingTransactions()
+    console.log(pendingTxs);
+
+    let debugMiner = new Miner(req.params.minerAddress,
+                               req.params.difficulty,
+                               currBlockIndex,
+                               latestBlock.blockHash,
+                               pendingTxs);
 
     res.json(debugMiner.mineBlock())
 });
