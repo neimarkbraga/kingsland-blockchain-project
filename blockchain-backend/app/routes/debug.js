@@ -2,6 +2,10 @@ const express = require('express');
 const globals = require('../../globals');
 const utils = require('../libraries/utils');
 
+const Block = require('./../classes/Block');
+const Miner = require('./../classes/Miner');
+const Transaction = require('./../classes/Transaction');
+
 let app = express.Router();
 
 // endpoints here!
@@ -17,7 +21,6 @@ app.get("/reset-chain", (req, res) => {
 
 });
 
-
 app.get('/random-wallet', (req, res) => {
     let private_key = utils.generatePrivateKey();
     let public_key  = utils.privateKeyToPublicKey(private_key);
@@ -27,6 +30,12 @@ app.get('/random-wallet', (req, res) => {
         public_key,
         address
     });
+});
+
+app.get('/mine/:minerAddress/:difficulty', (req, res) => {
+    debugMiner = new Miner(req.params.minerAddress, req.params.difficulty, 'BlockDataHash');
+
+    res.json(debugMiner.mineBlock())
 });
 
 module.exports = app;

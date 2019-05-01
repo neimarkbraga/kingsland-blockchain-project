@@ -53,5 +53,13 @@ module.exports = {
         let x = compressedPublicKey.substring(0, 64);
         let y = compressedPublicKey.substring(64);
         return secp256k1.curve.pointFromX(x, parseInt(y));
-    }
+    },
+    createDifficultyStr(difficulty) {
+        let diffStr = '';
+        for (let i = 0; i < difficulty; i++)
+        {
+          diffStr += '0';
+        }
+        return diffStr;
+      }
 };

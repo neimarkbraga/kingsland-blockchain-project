@@ -1,4 +1,6 @@
 const utils = require('./../libraries/utils');
+const Block = require('./Block');
+const Transaction = require('./Transaction');
 
 module.exports = class Miner {
     constructor(address, difficulty, blockDataHash) {
@@ -6,6 +8,7 @@ module.exports = class Miner {
         this.difficulty = difficulty;
         this.blockDataHash = blockDataHash;
         this.balance = 0 // to clarify where to put Reward Coins
+        this.mineBlock();
     }
 
     submitMinersHash() {
@@ -15,16 +18,29 @@ module.exports = class Miner {
         return 0;
     }
 
-    calculateMinersHash() {
-        let minersHash = 0;
+    mineBlock() {
+        let blockHash = 0;
         let nonce = 0;
+        let difficultyStr = utils.createDifficultyStr(this.difficulty);
 
-        while (!minersHash.toString().startsWith('00000')) //difficulty: 5
+        while (!blockHash.toString().startsWith(difficultyStr)) //difficulty: 5
         {
-            minersHash = utils.sha256(`${this.blockDataHash}|${new Date()}|${nonce++}`);
+            blockHash = utils.sha256(`${this.blockDataHash}|${new Date()}|${nonce++}`);
         }
 
-        return minersHash;
+        let coinbaseTx = Transaction.createCoinbaseTx();
+
+        return new Block(
+                            'get latest index + 1', //index
+                            [coinbaseTx],
+                            this.difficulty,
+                            'get prevBlockHash',
+                            this.address,
+                            this.blockDataHash,
+                            nonce,
+                            new Date(),
+                            blockHash
+                        );
     }
 
     requestBlockForMining() {

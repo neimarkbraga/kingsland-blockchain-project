@@ -26,6 +26,24 @@ module.exports = class Transaction {
         this.minedInBlockIndex      = minedInBlockIndex;
         this.transferSuccessful     = transferSuccessful;
     }
+
+    static createCoinbaseTx(minerAddress, reward = 5000000, blockIndex) {
+        return new Transaction(
+            "0000000000000000000000000000000000000000",
+            minerAddress,
+            reward,
+            0,     //feee
+            new Date(),
+            "coinbase tx",
+            "00000000000000000000000000000000000000000000000000000000000000000",
+            null, // transactionDataHash
+            ["0000000000000000000000000000000000000000000000000000000000000000",
+            "0000000000000000000000000000000000000000000000000000000000000000"],
+            blockIndex,
+            false   // transferSuccessful
+        );
+    }
+
     getDataHash() {
         return utils.sha256(JSON.stringify({
             from:           this.from,
