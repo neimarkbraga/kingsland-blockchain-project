@@ -4,31 +4,31 @@ const globals = require('../../globals');
 let app = express.Router();
 
 // endpoints here!
-
-let blocks = globals.node.getChain().getBlocks();
 app.get('/confirmed', (req, res) => {
-    res.status(200);
-
-    blocks.forEach((block) => {
-        res.json(block.getConfirmedTransactions()) // 1 block for now
-    });
-
-
-
+    res.json(globals.node.chain.getConfirmedTransactions());
 });
 
 app.get('/pending', (req, res) => {
-    res.status(200);
     res.json(globals.node.chain.pendingTransactions);
+});
+
+app.get('/:hash', (req, res) => {
+    let hash = req.params.hash;
+    let transaction = globals.node.chain.getTransactionByDataHash(hash);
+    if(transaction) res.json(transaction);
+    else {
+        res.status(404);
+        res.json({
+            errorMsg: 'Invalid transaction hash'
+        });
+    }
 });
 
 app.post('/send', async(req, res) => {
     try {
         let body = req.body;
         let transaction = globals.node.chain.createPendingTransaction(body);
-
-        // broadcast transaction
-
+        globals.node.broadcastPendingTransaction(transaction);
         res.json(transaction);
     }
     catch (error) {

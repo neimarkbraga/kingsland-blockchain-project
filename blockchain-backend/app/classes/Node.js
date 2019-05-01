@@ -10,6 +10,10 @@ module.exports = class Node {
         this.chain   = new BlockChain();
     }
 
+    broadcastPendingTransaction(transaction) {
+        // code for broadcasting pending transaction to peers
+    }
+
     getChain() {
         return this.chain;
     }

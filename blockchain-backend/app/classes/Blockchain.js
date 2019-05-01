@@ -79,6 +79,13 @@ module.exports = class BlockChain {
         return transaction;
     }
 
+    getAddressTransactions(address) {
+        let transactions = this.getAllTransactions();
+        return transactions.filter(item => {
+            return item.to === address || item.from === address;
+        });
+    }
+
     getConfirmedTransactions() {
         let transactions = [];
         for(let i = 0; i < this.blocks.length; i++) {
