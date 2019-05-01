@@ -38,26 +38,20 @@ module.exports = class Transaction {
         }));
     }
 
+    getConfirmations(blocksCount) {
+        if(this.minedInBlockIndex === undefined) return 0;
+        return blocksCount - this.minedInBlockIndex;
+    }
+
     isValidSignature() {
         return utils.isValidSignature(this.transactionDataHash, this.senderPubKey, this.senderSignature);
     }
 
     isConfirmed() {
-        return this.minedInBlockIndex != 0 &&
-               this.transferSuccessful == true;
+        return typeof this.minedInBlockIndex === 'number' && this.transferSuccessful;
     }
 
     isPending() {
-        return this.from &&
-               this.to &&
-               this.value &&
-               this.fee &&
-               this.dateCreated &&
-               this.data &&
-               this.senderPubkey &&
-               this.transactionDataHash &&
-               this.senderSignature &&
-               this.minedInBlockIndex  == 0 &&
-               this.transferSuccessful == false;
+        return this.minedInBlockIndex === undefined;
     }
 };

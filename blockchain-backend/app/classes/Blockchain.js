@@ -66,9 +66,11 @@ module.exports = class BlockChain {
         );
 
         // validate balance
+        let balance = this.getAddressBalance(data.from);
+        if(balance.confirmedBalance < (data.value + data.fee)) throw new Error('Sender does not have enough balance.');
 
         // check signature if valid
-        if(!transaction.isValidSignature()) throw new Error('Invalid senderSignature');
+        if(!transaction.isValidSignature()) throw new Error('Invalid sender signature.');
 
         // check duplicate
         if(this.getTransactionByDataHash(transaction.transactionDataHash)) throw new Error('Transaction duplicate detected.');
@@ -77,19 +79,87 @@ module.exports = class BlockChain {
         return transaction;
     }
 
-    getTransactionByDataHash(hash) {
+    getConfirmedTransactions() {
+        let transactions = [];
         for(let i = 0; i < this.blocks.length; i++) {
             let block = this.blocks[i];
             for(let j = 0; j < block.transactions.length; j++) {
-                let transaction = block.transactions[j];
-                if(transaction.transactionDataHash === hash) return transaction;
+                transactions.push(block.transactions[j]);
             }
         }
+        return transactions;
+    }
+
+    getAllTransactions() {
+        let transactions = this.getConfirmedTransactions();
         for(let i = 0; i < this.pendingTransactions.length; i++) {
-            let transaction = this.pendingTransactions[i];
+            transactions.push(this.pendingTransactions[i]);
+        }
+        return transactions;
+    }
+
+    getTransactionByDataHash(hash) {
+        let transactions = this.getAllTransactions();
+        for(let i = 0; i < transactions.length; i++) {
+            let transaction = transactions[i];
             if(transaction.transactionDataHash === hash) return transaction;
         }
         return undefined;
+    }
+
+    getAllBalances() {
+        let balances = {};
+        let transactions = this.getAllTransactions();
+        for(let i = 0; i < transactions.length; i++) {
+            let transaction = transactions[i];
+            let confirmations = transaction.getConfirmations(this.blocks.length);
+
+            balances[transaction.from] = balances[transaction.from] || {
+                safeBalance: 0,
+                confirmedBalance: 0,
+                pendingBalance: 0
+            };
+            balances[transaction.to] = balances[transaction.to] || {
+                safeBalance: 0,
+                confirmedBalance: 0,
+                pendingBalance: 0
+            };
+
+            // pending balance
+            balances[transaction.from].pendingBalance -= transaction.fee;
+            if(transaction.isPending() || transaction.transferSuccessful) {
+                balances[transaction.from].pendingBalance -= transaction.value;
+                balances[transaction.to].pendingBalance += transaction.value;
+            }
+
+            // safe balance
+            if(confirmations >= config.safe_confirms) {
+                balances[transaction.from].safeBalance -= transaction.fee;
+                if(transaction.transferSuccessful) {
+                    balances[transaction.from].safeBalance -= transaction.value;
+                    balances[transaction.to].safeBalance += transaction.value;
+                }
+            }
+
+            // confirmed balance
+            if(confirmations >= 1) {
+                balances[transaction.from].confirmedBalance -= transaction.fee;
+                if(transaction.transferSuccessful) {
+                    balances[transaction.from].confirmedBalance -= transaction.value;
+                    balances[transaction.to].confirmedBalance += transaction.value;
+                }
+            }
+        }
+        return balances;
+    }
+
+    getAddressBalance(address) {
+        let balances = this.getAllBalances();
+        return balances[address] || {
+            safeBalance: 0,
+            confirmedBalance: 0,
+            pendingBalance: 0
+        };
     }
 
     sendMiningJob(minerAddress) {

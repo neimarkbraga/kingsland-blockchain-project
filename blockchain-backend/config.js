@@ -9,5 +9,6 @@ module.exports = {
     faucet_private_key: '',
     faucet_public_key: '',
     faucet_address: 'f3a1e69b6176052fcc4a3248f1c5a91dea308ca9',
-    faucet_init_value: 1000000000000
+    faucet_init_value: 1000000000000,
+    safe_confirms: 6
 };
