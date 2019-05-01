@@ -6,7 +6,7 @@ module.exports = class Node {
     constructor(selfUrl) {
         this.nodeId  = utils.sha256(new Date().getTime() + Math.random());
         this.selfUrl = selfUrl;
-        this.peers   = [];
+        this.peers   = {};
         this.chain   = new BlockChain();
     }
 
@@ -26,12 +26,18 @@ module.exports = class Node {
         this.chain = new BlockChain();
     }
 
-    toJSON() {
+    getInfo() {
         return {
-           nodeId: this.nodeId,
-           selfUrl: this.selfUrl,
-           peers: this.peers,
-           chain: this.chain
-        }
+            about: 'kingsland-blockchain-project',
+            nodeId: this.nodeId,
+            chainId: this.chain.blocks[0].blockHash,
+            nodeUrl: this.selfUrl,
+            peers: Object.keys(this.peers).length,
+            currentDifficulty: undefined,
+            blocksCount: this.chain.blocks.length,
+            cumulativeDifficulty: undefined,
+            confirmedTransactions: this.chain.getConfirmedTransactions().length,
+            pendingTransactions: this.chain.pendingTransactions.length
+        };
     }
 };

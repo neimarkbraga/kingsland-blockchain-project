@@ -1,4 +1,5 @@
 const express = require('express');
+const globals = require('../../globals');
 let app = express.Router();
 
 // endpoints here!
@@ -7,7 +8,7 @@ app.get('/test', async (req, res) => {
 });
 
 app.get('/info', async (req, res) => {
-    res.json(APP_NODE.toJSON());
+    res.json(globals.node.getInfo());
 });
 
 module.exports = app;
