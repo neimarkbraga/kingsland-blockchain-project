@@ -1,3 +1,5 @@
+const utils = require('./../libraries/utils');
+
 module.exports = class Miner {
     constructor(address, difficulty, blockDataHash) {
         this.address = address;
@@ -15,15 +17,14 @@ module.exports = class Miner {
 
     calculateMinersHash() {
         let minersHash = 0;
-        let dateCreated = new Date;
         let nonce = 0;
 
-        // while (minersHash leading zeroes < difficulty)
-        // nonce++
-        // timeStamp = new Date
-        // SHA256(blockDataHash + dateCreated + nonce ) = blockHash
+        while (!minersHash.toString().startsWith('00000')) //difficulty: 5
+        {
+            minersHash = utils.sha256(`${this.blockDataHash}|${new Date()}|${nonce++}`);
+        }
 
-        return 0;
+        return minersHash;
     }
 
     requestBlockForMining() {
