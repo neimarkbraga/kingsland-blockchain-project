@@ -62,7 +62,7 @@ module.exports = class Block {
     isValidHashDifficulty(difficulty) {
         if(typeof difficulty !== 'number') difficulty = this.difficulty;
         if(difficulty) {
-            let pattern = new RegExp(`0{${difficulty}}`);
+            let pattern = new RegExp(`^0{${difficulty}}`);
             return pattern.test(this.blockHash);
         }
         return true;

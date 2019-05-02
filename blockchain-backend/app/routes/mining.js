@@ -27,7 +27,7 @@ app.get('/get-mining-job/:minerAddress', (req, res) => {
     }
 });
 
-app.get('/submit-mined-block', async (req, res) => {
+app.post('/submit-mined-block', async (req, res) => {
     try {
         let body = req.body;
         if(!body.blockDataHash) throw new Error('blockDataHash field is missing.');
@@ -38,12 +38,13 @@ app.get('/submit-mined-block', async (req, res) => {
         body.nonce = Number(body.nonce);
 
         let candidate = globals.node.chain.miningJobs[body.blockDataHash];
-        if(candidate) throw new Error('Block not found or already mined');
+        if(!candidate) throw new Error('Block not found or already mined');
 
         candidate.nonce = body.nonce;
         candidate.dateCreated = body.dateCreated;
         candidate.calculateHash();
         globals.node.chain.addBlock(candidate);
+        await globals.node.notifyNewBlock(candidate);
 
         res.json({
             message: `Block accepted, reward paid: ${candidate.transactions[0].value} microcoins`

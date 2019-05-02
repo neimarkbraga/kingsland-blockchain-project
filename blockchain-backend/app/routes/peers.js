@@ -35,11 +35,11 @@ app.post('/notify-new-block', async(req, res) => {
                 let candidateBlock = Block.createFromJson(body.newBlock);
                 globals.node.chain.addBlock(candidateBlock);
                 syncAllBlocks = false;
-            } catch (error) {}
+            } catch (error) { console.log(error); }
         }
         if(syncAllBlocks) await globals.node.syncPeerByInfo(body);
     }
-    catch (error) {}
+    catch (error) { console.log(error); }
     res.json({ message: 'Thank you for the notification.' });
 });
 

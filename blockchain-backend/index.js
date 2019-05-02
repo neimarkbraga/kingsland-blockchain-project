@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const commander = require('commander');
+const cors = require('cors');
 const config = require('./config');
 
 // init app
@@ -12,6 +13,10 @@ commander.option('-p, --port [value]');
 commander.parse(process.argv);
 config.node_host = commander.host || config.node_host;
 config.node_port = commander.port || config.node_port;
+
+
+// allow cross origin
+app.use(cors({origin: true}));
 
 
 // parse body

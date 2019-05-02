@@ -35,6 +35,7 @@ module.exports = class Node {
             try { await axios.post(`${peerUrl}/peers/notify-new-block`, data); }
             catch (error) { delete this.peers[id]; }
         }
+        return true;
     }
 
     getChain() {
