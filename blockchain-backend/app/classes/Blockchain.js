@@ -9,8 +9,8 @@ module.exports = class BlockChain {
     constructor() {
         this.blocks = [BlockChain.createGenesisBlock()];
         this.pendingTransactions = [];
-        this.currentDifficulty = 0;
-        this.miningJobs = new Map; //map <blockDataHash -> block>
+        this.currentDifficulty = 5;
+        this.miningJobs = new Map();
     }
 
     static createGenesisBlock() {
@@ -105,10 +105,6 @@ module.exports = class BlockChain {
         return transactions;
     }
 
-    getPendingTransactions() {
-        return this.pendingTransactions;
-    }
-
     getTransactionByDataHash(hash) {
         let transactions = this.getAllTransactions();
         for(let i = 0; i < transactions.length; i++) {
@@ -188,38 +184,21 @@ module.exports = class BlockChain {
         return this.blocks[currIndex];
     }
 
-    sendMiningJob(minerAddress) {
-        if (!this.pendingTransactions) {
-            return;
-        }
-
-        let candidateBlock = new Block(
-                                        this.blocks.length + 1,   // index
-                                        this.pendingTransactions, // transactions
-                                        this.currentDifficulty,   // difficulty
-                                        "prevBlockHash",          // prevBlockHash
-                                        0,                        // minedBy
-                                        "blockDataHash",          // blockDataHash
-                                        0,                        // nonce
-                                        new Date(),               // dateCreated
-                                        undefined                 // blockHash
-                                      );
-
-        let miner = new Miner(
-                                minerAddress,
-                                this.currentDifficulty,
-                                candidateBlock.getDataHash(),
-                             );
-
-        // ADD TO MINING JOBS
-        // this.miningJobs.set(this.candidateBlock.getDataHash(), this.blocks.length + 1);
-    }
-
     getBlockByIndex(index) {
         return this.blocks[index];
     }
 
     getBlocks() {
         return this.blocks;
+    }
+
+    addMiningJob(blockDataHash, blockIndex) {
+        this.miningJobs.set(blockDataHash, blockIndex);
+    }
+
+    addBlock(newBlock) {
+        //validate block
+        this.blocks.push(newBlock);
+        console.log(this.blocks);
     }
 };

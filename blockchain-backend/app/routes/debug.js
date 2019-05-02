@@ -41,19 +41,22 @@ app.get('/random-wallet', (req, res) => {
 });
 
 app.get('/mine/:minerAddress/:difficulty', (req, res) => {
-    let currBlockIndex = globals.node.getChain().blocks.length + 1;
-    let latestBlock = globals.node.getChain().getLatestBlock();
+    let chain =  globals.node.getChain();
 
-    let pendingTxs  = globals.node.getChain().getPendingTransactions()
-    console.log(pendingTxs);
+    let currBlockIndex = chain.blocks.length;
+    let coinbaseTx     = Transaction.createCoinbaseTx();
+    let pendingTxs     = chain.pendingTransactions;
+    let difficulty     = req.params.difficulty;
+    let prevBlockHash  = chain.getLatestBlock().blockHash;
+    let minerAddress   = req.params.minerAddress;
 
-    let debugMiner = new Miner(req.params.minerAddress,
-                               req.params.difficulty,
-                               currBlockIndex,
-                               latestBlock.blockHash,
-                               pendingTxs);
+    let candidateBlock = new Block(currBlockIndex, [coinbaseTx, pendingTxs],
+                                   difficulty, prevBlockHash, minerAddress);
 
-    res.json(debugMiner.mineBlock())
+    let miner = new Miner(minerAddress, difficulty);
+
+    miner.mineBlock(candidateBlock);
+    res.json(candidateBlock);
 });
 
 module.exports = app;

@@ -1,16 +1,9 @@
 const utils = require('./../libraries/utils');
-const Block = require('./Block');
-const Transaction = require('./Transaction');
 
 module.exports = class Miner {
-    constructor(address, difficulty, currBlockIndex, prevBlockHash, pendingTxs) {
+    constructor(address, difficulty) {
         this.address = address;
-        this.difficulty = difficulty;
-        this.currBlockIndex = currBlockIndex;
-        this.prevBlockHash = prevBlockHash;
-        this.pendingTxs = pendingTxs;
-
-        this.mineBlock();
+        this.difficulty = difficulty
     }
 
     submitMinersHash() {
@@ -20,29 +13,19 @@ module.exports = class Miner {
         return 0;
     }
 
-    mineBlock() {
+    mineBlock(candidateBlock) {
         let blockHash = 0;
         let nonce = 0;
         let difficultyStr = utils.createDifficultyStr(this.difficulty);
 
-        while (!blockHash.toString().startsWith(difficultyStr)) //difficulty: 5
+        while (!blockHash.toString().startsWith(difficultyStr))
         {
-            blockHash = utils.sha256(`${this.blockDataHash}|${new Date()}|${nonce++}`);
+            blockHash = utils.sha256(`${candidateBlock.blockDataHash}|${new Date()}|${nonce++}`);
         }
 
-        let coinbaseTx = Transaction.createCoinbaseTx();
-
-        return new Block(
-                            this.currBlockIndex,
-                            [coinbaseTx, this.pendingTxs],
-                            this.difficulty,
-                            this.prevBlockHash,
-                            this.address,
-                            0,
-                            nonce,
-                            new Date(),
-                            blockHash
-                        );
+        candidateBlock.nonce = nonce;
+        candidateBlock.dateCreated = new Date();
+        candidateBlock.blockHash = blockHash;
     }
 
     requestBlockForMining() {
