@@ -58,8 +58,8 @@ module.exports = {
         let diffStr = '';
         for (let i = 0; i < difficulty; i++)
         {
-          diffStr += '0';
+            diffStr += '0';
         }
         return diffStr;
-      }
+    }
 };

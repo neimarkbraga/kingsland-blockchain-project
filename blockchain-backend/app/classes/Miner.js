@@ -16,15 +16,17 @@ module.exports = class Miner {
     mineBlock(candidateBlock) {
         let blockHash = 0;
         let nonce = 0;
+        let timestamp = undefined;
         let difficultyStr = utils.createDifficultyStr(this.difficulty);
 
         while (!blockHash.toString().startsWith(difficultyStr))
         {
-            blockHash = utils.sha256(`${candidateBlock.blockDataHash}|${new Date()}|${nonce++}`);
+            timestamp = new Date();
+            blockHash = utils.sha256(`${candidateBlock.blockDataHash}|${timestamp}|${++nonce}`);
         }
 
         candidateBlock.nonce = nonce;
-        candidateBlock.dateCreated = new Date();
+        candidateBlock.dateCreated = timestamp;
         candidateBlock.blockHash = blockHash;
     }
 

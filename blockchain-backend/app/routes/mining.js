@@ -32,7 +32,7 @@ app.get('/get-mining-job/:minerAddress', (req, res) => {
 app.get('/submit-mined-block', (req, res) => {
     chain.addBlock(candidateBlock);
 
-    res.json({'msg': 'submit-mined-block'});
+    res.json(chain.blocks);
 });
 
 module.exports = app;

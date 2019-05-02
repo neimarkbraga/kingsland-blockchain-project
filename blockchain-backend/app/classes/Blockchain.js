@@ -1,5 +1,4 @@
 const Block = require("./Block");
-const Miner = require("./Miner");
 const Transaction = require('./Transaction');
 const config = require('../../config');
 const utils = require('../libraries/utils');
@@ -197,8 +196,24 @@ module.exports = class BlockChain {
     }
 
     addBlock(newBlock) {
-        //validate block
+        const prevBlock = this.getLatestBlock();
+        if (prevBlock.index + 1 !== newBlock.index) {
+            console.log('Invalid Index');
+
+            return;
+        }
+
+        if (prevBlock.blockHash !== newBlock.prevBlockHash) {
+            console.log('Invalid PrevBlockHash');
+            return;
+        }
+
+        if (utils.sha256(`${newBlock.blockDataHash}|${newBlock.dateCreated}|${newBlock.nonce}`) !== newBlock.blockHash) {
+
+            console.log('Invalid BlockHash');
+            return;
+        }
+
         this.blocks.push(newBlock);
-        console.log(this.blocks);
     }
 };
