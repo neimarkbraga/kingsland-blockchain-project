@@ -1,15 +1,16 @@
 const utils = require('../libraries/utils');
+const Transaction = require('./Transaction');
 
 module.exports = class Block {
-    constructor(index = 0,
-                transactions = [], // hardcode Transaction Class instances here to debug
-                difficulty = 0,
-                prevBlockHash = undefined,
-                minedBy = 0,
-                blockDataHash = undefined,
-                nonce = 0,
-                dateCreated = new Date(),
-                blockHash = undefined)
+    constructor(index,
+                transactions,
+                difficulty,
+                prevBlockHash,
+                minedBy,
+                blockDataHash,
+                nonce,
+                dateCreated,
+                blockHash)
     {
         this.index          = index;
         this.transactions   = transactions;
@@ -22,6 +23,20 @@ module.exports = class Block {
         this.blockHash      = blockHash || this.getHash();
     }
 
+    static createFromJson(data) {
+        return new Block(
+            data.index,
+            Array.isArray(data.transactions)? data.transactions.map(a => Transaction.createFromJson(a)) : data.transactions,
+            data.difficulty,
+            data.prevBlockHash,
+            data.minedBy,
+            data.blockDataHash,
+            data.nonce,
+            data.dateCreated,
+            data.blockHash
+        );
+    }
+
     getDataHash() {
         return utils.sha256(JSON.stringify({
             index: this.index,
@@ -32,8 +47,16 @@ module.exports = class Block {
         }));
     }
 
+    calculateDataHash() {
+        this.blockDataHash = this.getDataHash();
+    }
+
     getHash() {
         return utils.sha256(`${this.blockDataHash}|${this.dateCreated}|${this.nonce}`);
+    }
+
+    calculateHash() {
+        this.blockHash = this.getHash();
     }
 
     getTransactionByHash() {

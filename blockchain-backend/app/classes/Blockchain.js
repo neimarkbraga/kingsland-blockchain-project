@@ -124,6 +124,10 @@ module.exports = class BlockChain {
         return balances;
     }
 
+    cumulativeDifficulty() {
+        return this.currentDifficulty;
+    }
+
     getAllBalances() {
         let balances = {};
         let transactions = this.getAllTransactions();

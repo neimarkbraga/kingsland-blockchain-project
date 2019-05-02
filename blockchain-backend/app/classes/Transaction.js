@@ -44,6 +44,22 @@ module.exports = class Transaction {
         );
     }
 
+    static createFromJson(data) {
+        return new Transaction(
+            data.from,
+            data.to,
+            data.value,
+            data.fee,
+            data.dateCreated,
+            data.data,
+            data.senderPubKey,
+            data.transactionDataHash,
+            data.senderSignature,
+            data.minedInBlockIndex,
+            data.transferSuccessful
+        );
+    }
+
     getDataHash() {
         return utils.sha256(JSON.stringify({
             from:           this.from,
@@ -54,6 +70,10 @@ module.exports = class Transaction {
             data:           this.data,
             senderPubKey:   this.senderPubKey
         }));
+    }
+
+    calculateDataHash() {
+        this.transactionDataHash = this.getDataHash();
     }
 
     getConfirmations(blocksCount) {
