@@ -1,5 +1,6 @@
 const express = require('express');
 const globals = require('../../globals');
+const Block = require('../classes/Block');
 let app = express.Router();
 
 // endpoints here!
@@ -11,7 +12,10 @@ app.post('/connect', async(req, res) => {
     try {
         let body = req.body;
         if(!body.peerUrl) throw new Error('peerUrl is required');
-        await globals.node.addPeerByUrl(body.peerUrl);
+        let info = await globals.node.addPeerByUrl(body.peerUrl);
+        await globals.node.syncPeerByInfo(info);
+        // try { await this.syncPeerByInfo(info); }
+        // catch (error) { delete globals.node.peers[info.nodeId]; }
         res.json({message: `Connected to peer: ${body.peerUrl}`});
     }
     catch (error) {
@@ -20,6 +24,23 @@ app.post('/connect', async(req, res) => {
             errorMsg: error.message || 'Something went wrong'
         });
     }
+});
+
+app.post('/notify-new-block', async(req, res) => {
+    try {
+        let body = req.body;
+        let syncAllBlocks = true;
+        if(body.newBlock) {
+            try {
+                let candidateBlock = Block.createFromJson(body.newBlock);
+                globals.node.chain.addBlock(candidateBlock);
+                syncAllBlocks = false;
+            } catch (error) {}
+        }
+        if(syncAllBlocks) await globals.node.syncPeerByInfo(body);
+    }
+    catch (error) {}
+    res.json({ message: 'Thank you for the notification.' });
 });
 
 module.exports = app;

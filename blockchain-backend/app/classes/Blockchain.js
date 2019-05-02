@@ -8,8 +8,8 @@ module.exports = class BlockChain {
     constructor() {
         this.blocks = [BlockChain.createGenesisBlock()];
         this.pendingTransactions = [];
-        this.currentDifficulty = 5;
-        this.miningJobs = new Map();
+        this.currentDifficulty = config.start_difficulty;
+        this.miningJobs = {};
     }
 
     static createGenesisBlock() {
@@ -78,6 +78,27 @@ module.exports = class BlockChain {
         return transaction;
     }
 
+    removePendingTransactionByHash(hash) {
+        for(let i = 0; i < this.pendingTransactions.length; i++) {
+            if(this.pendingTransactions[i].transactionDataHash === hash) {
+                this.pendingTransactions.splice(i, 1);
+                break;
+            }
+        }
+    }
+
+    getCumulativeDifficulty() {
+        //Cumulative difficulty == how much effort is spent to calculate it
+        //cumulativeDifficulty == 16 ^ d0 + 16 ^ d1 + … 16 ^ dn
+        //where d0, d1, … dn are the individual difficulties of the blocks
+        let difficulty = 0;
+        for(let i = 0; i < this.blocks.length; i++) {
+            let block = this.blocks[i];
+            difficulty += Math.pow(16, block.difficulty);
+        }
+        return difficulty;
+    }
+
     getAddressTransactions(address) {
         let transactions = this.getAllTransactions();
         return transactions.filter(item => {
@@ -117,10 +138,6 @@ module.exports = class BlockChain {
         let balances = this.getAllBalances();
         for(let address in  balances) balances[address] = balances[address].confirmedBalance;
         return balances;
-    }
-
-    cumulativeDifficulty() {
-        return this.currentDifficulty;
     }
 
     getAllBalances() {
@@ -191,29 +208,123 @@ module.exports = class BlockChain {
         return this.blocks;
     }
 
-    addMiningJob(blockDataHash, blockIndex) {
-        this.miningJobs.set(blockDataHash, blockIndex);
+    createCandidateBlock(address) {
+        let newBlockIndex = this.blocks.length;
+        let lastBlock = this.blocks[newBlockIndex - 1];
+        let coinbaseTx = Transaction.createCoinbaseTx(address);
+        let pendingTxs = JSON.parse(JSON.stringify(this.pendingTransactions));
+        let finalTxs = [coinbaseTx];
+        let balances = this.getConfirmedBalances();
+
+
+        // determine if transfer is successful
+        for(let i = 0; i < pendingTxs.length; i++) {
+            let pendingTx = pendingTxs[i];
+
+            balances[pendingTx.from] = balances[pendingTx.from] || 0;
+            balances[pendingTx.to] = balances[pendingTx.to] || 0;
+            if(balances[pendingTx.from] < pendingTx.fee) this.removePendingTransactionByHash(pendingTx.transactionDataHash);
+            else {
+                pendingTx.minedInBlockIndex = newBlockIndex;
+                balances[pendingTx.from] -= pendingTx.fee;
+                coinbaseTx.value += pendingTx.fee;
+
+                if(balances[pendingTx.from] < pendingTx.value) pendingTx.transferSuccessful = false;
+                else {
+                    balances[pendingTx.from] -= pendingTx.value;
+                    balances[pendingTx.to] += pendingTx.value;
+                    pendingTx.transferSuccessful = true;
+                }
+                finalTxs.push(Transaction.createFromJson(pendingTx));
+            }
+        }
+
+        coinbaseTx.minedInBlockIndex = newBlockIndex;
+        coinbaseTx.transferSuccessful = true;
+        coinbaseTx.calculateDataHash();
+
+        let candidateBlock = new Block(
+            newBlockIndex,
+            finalTxs,
+            this.currentDifficulty,
+            lastBlock.blockHash,
+            address,
+            undefined,
+            0,
+            new Date().toISOString(),
+            undefined
+        );
+        this.miningJobs[candidateBlock.blockDataHash] = candidateBlock;
+
+        return candidateBlock;
     }
 
     addBlock(newBlock) {
-        const prevBlock = this.getLatestBlock();
-        if (prevBlock.index + 1 !== newBlock.index) {
-            console.log('Invalid Index');
+        let latestBlock = this.getLatestBlock();
+        let confirmedBalances = this.getConfirmedBalances();
+        let minerMaxReward = config.block_reward;
+        let minerReward = 0;
 
-            return;
+        if(typeof newBlock.index !== 'number') throw new Error('Invalid block index value');
+        if(!Array.isArray(newBlock.transactions)) throw new Error('Invalid block transactions value');
+        if(typeof newBlock.difficulty !== 'number') throw new Error('Invalid block difficulty value');
+        if(typeof newBlock.minedBy !== 'string') throw new Error('Invalid block minedBy value');
+        if(typeof newBlock.blockDataHash !== 'string') throw new Error('Invalid block blockDataHash value');
+        if(typeof newBlock.nonce !== 'number') throw new Error('Invalid block nonce value');
+        if(!utils.isISO8601Date(newBlock.dateCreated)) throw new Error('Invalid block dateCreated value');
+        if(typeof newBlock.blockHash !== 'string') throw new Error('Invalid block blockHash value');
+
+        for(let i = 0; i < newBlock.transactions.length; i++) {
+            let transaction = newBlock.transactions[i];
+            let isRewardTx = false;
+
+
+            if(typeof transaction.from !== 'string') throw new Error(`Invalid transaction[${i}].from value`);
+            if(typeof transaction.to !== 'string') throw new Error(`Invalid transaction[${i}].to value`);
+            if(typeof transaction.value !== 'number') throw new Error(`Invalid transaction[${i}].value value`);
+            if(typeof transaction.fee !== 'number') throw new Error(`Invalid transaction[${i}].fee value`);
+            if(!utils.isISO8601Date(transaction.dateCreated)) throw new Error(`Invalid transaction[${i}].dateCreated value`);
+            if(typeof transaction.senderPubKey !== 'string') throw new Error(`Invalid transaction[${i}].senderPubKey value`);
+            if(!Array.isArray(transaction.senderSignature) && transaction.senderSignature.length !== 2) throw new Error(`Invalid transaction[${i}].senderSignature value`);
+            if(transaction.transactionDataHash !== transaction.getDataHash()) throw new Error(`Invalid transaction[${i}].transactionDataHash calculation`);
+
+
+            minerMaxReward += transaction.fee;
+            if(transaction.from === config.default_address && transaction.to === newBlock.minedBy) {
+                minerReward += transaction.value;
+                isRewardTx = true;
+            }
+            else if(!transaction.isValidSignature()) throw new Error(`Invalid transaction[${i}].senderSignatures`);
+
+            confirmedBalances[transaction.from] = confirmedBalances[transaction.from] || 0;
+            confirmedBalances[transaction.to] = confirmedBalances[transaction.to] || 0;
+
+
+            if(!isRewardTx && confirmedBalances[transaction.from] < transaction.fee) throw new Error(`Invalid transaction[${i}] - not enough balance`);
+            confirmedBalances[transaction.from] -= transaction.fee;
+
+            transaction.minedInBlockIndex = newBlock.index;
+            if(!isRewardTx && confirmedBalances[transaction.from] < transaction.value) transaction.transferSuccessful = false;
+            else {
+                confirmedBalances[transaction.from] -= transaction.value;
+                confirmedBalances[transaction.to] += transaction.value;
+                transaction.transferSuccessful = true;
+            }
+
+            let _transaction = this.getTransactionByDataHash(transaction.transactionDataHash);
+            if(_transaction && _transaction.isConfirmed()) throw new Error(`Invalid transaction[${i}] - duplicate`);
         }
+        if(minerReward > minerMaxReward) error(`Invalid block[${i}] miner reward`);
 
-        if (prevBlock.blockHash !== newBlock.prevBlockHash) {
-            console.log('Invalid PrevBlockHash');
-            return;
-        }
+        if(newBlock.index !== this.blocks.length) throw new Error('Block is already in blockchain');
+        if(newBlock.prevBlockHash !== latestBlock.blockHash) throw new Error('Invalid prevBlockHash');
 
-        if (utils.sha256(`${newBlock.blockDataHash}|${newBlock.dateCreated}|${newBlock.nonce}`) !== newBlock.blockHash) {
 
-            console.log('Invalid BlockHash');
-            return;
-        }
+        if(newBlock.blockHash !== newBlock.getHash()) throw new Error(`Invalid block blockHash calculation`);
+        if(!newBlock.isValidHashDifficulty()) throw new Error('Invalid PoW');
 
         this.blocks.push(newBlock);
+        this.miningJobs = {};
+        this.pendingTransactions = [];
     }
 };

@@ -21,7 +21,7 @@ module.exports = class Miner {
 
         while (!blockHash.toString().startsWith(difficultyStr))
         {
-            timestamp = new Date();
+            timestamp = new Date().toISOString();
             blockHash = utils.sha256(`${candidateBlock.blockDataHash}|${timestamp}|${++nonce}`);
         }
 

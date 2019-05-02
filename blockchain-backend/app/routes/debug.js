@@ -40,23 +40,23 @@ app.get('/random-wallet', (req, res) => {
     });
 });
 
-app.get('/mine/:minerAddress/:difficulty', (req, res) => {
-    let chain =  globals.node.getChain();
-
-    let currBlockIndex = chain.blocks.length;
-    let coinbaseTx     = Transaction.createCoinbaseTx();
-    let pendingTxs     = chain.pendingTransactions;
-    let difficulty     = req.params.difficulty;
-    let prevBlockHash  = chain.getLatestBlock().blockHash;
-    let minerAddress   = req.params.minerAddress;
-
-    let candidateBlock = new Block(currBlockIndex, [coinbaseTx, pendingTxs],
-                                   difficulty, prevBlockHash, minerAddress);
-
-    let miner = new Miner(minerAddress, difficulty);
-
-    miner.mineBlock(candidateBlock);
-    res.json(candidateBlock);
+app.get('/mine/:minerAddress/:difficulty', async (req, res) => {
+    try {
+        let minerAddress = req.params.minerAddress;
+        let difficulty = parseInt(req.params.difficulty);
+        let candidateBlock = globals.node.chain.createCandidateBlock(minerAddress);
+        let miner = new Miner(minerAddress, difficulty);
+        miner.mineBlock(candidateBlock);
+        globals.node.chain.addBlock(candidateBlock);
+        await globals.node.notifyNewBlock(candidateBlock);
+        res.json(candidateBlock);
+    }
+    catch (error) {
+        res.status(400);
+        res.json({
+            errorMsg: error.message || 'Something went wrong'
+        });
+    }
 });
 
 module.exports = app;

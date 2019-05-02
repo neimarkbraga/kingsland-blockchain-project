@@ -1,4 +1,5 @@
 const utils = require('../libraries/utils');
+const config = require('../../config');
 
 module.exports = class Transaction {
 
@@ -27,20 +28,19 @@ module.exports = class Transaction {
         this.transferSuccessful     = transferSuccessful;
     }
 
-    static createCoinbaseTx(minerAddress, reward = 5000000, blockIndex) {
+    static createCoinbaseTx(minerAddress, reward = config.block_reward, blockIndex) {
         return new Transaction(
-            "0000000000000000000000000000000000000000",
-            minerAddress,
-            reward,
-            0,     //feee
-            new Date(),
-            "coinbase tx",
-            "00000000000000000000000000000000000000000000000000000000000000000",
-            null, // transactionDataHash
-            ["0000000000000000000000000000000000000000000000000000000000000000",
-            "0000000000000000000000000000000000000000000000000000000000000000"],
-            blockIndex,
-            false   // transferSuccessful
+            config.default_address,         // from
+            minerAddress,                   // to
+            reward,                         // value
+            0,                              // fee
+            new Date().toISOString(),       // dateCreated
+            config.coinbase_tx_data,        // data
+            config.default_public_key,      // senderPubKey
+            undefined,                      // transactionDataHash
+            config.default_sender_signature,// senderSignature
+            blockIndex,                     // minedInBlockIndex
+            true                            // transferSuccessful
         );
     }
 
@@ -82,7 +82,12 @@ module.exports = class Transaction {
     }
 
     isValidSignature() {
-        return utils.isValidSignature(this.transactionDataHash, this.senderPubKey, this.senderSignature);
+        try {
+            return utils.isValidSignature(this.transactionDataHash, this.senderPubKey, this.senderSignature);
+        }
+        catch (error) {
+            return false;
+        }
     }
 
     isConfirmed() {

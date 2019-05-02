@@ -59,33 +59,12 @@ module.exports = class Block {
         this.blockHash = this.getHash();
     }
 
-    getTransactionByHash() {
-        return 0;
-    }
-
-    getConfirmedTransactions() {
-        return this.transactions.filter((transaction) => {
-            return transaction.isConfirmed();
-        });
-    }
-
-    getPendingTransactions() {
-        return this.transactions.filter((transaction) => {
-            return transaction.isPending();
-        });
-    }
-
-    toJSON() {
-        return {
-            index:          this.index,
-            transactions:   this.transactions,
-            difficulty:     this.difficulty,
-            prevHash:       this.prevHash,
-            minedBy:        this.minedBy,
-            blockDataHash:  this.blockDataHash,
-            nonce:          this.nonce,
-            dateCreated:    this.dateCreated,
-            blockHash:      this.blockHash
+    isValidHashDifficulty(difficulty) {
+        if(typeof difficulty !== 'number') difficulty = this.difficulty;
+        if(difficulty) {
+            let pattern = new RegExp(`0{${difficulty}}`);
+            return pattern.test(this.blockHash);
         }
+        return true;
     }
 };

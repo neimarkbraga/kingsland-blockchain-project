@@ -1,4 +1,5 @@
 const axios = require('axios');
+const config = require('../../config');
 const utils = require('../libraries/utils');
 const BlockChain = require('./Blockchain');
 const Block = require('./Block');
@@ -19,15 +20,25 @@ module.exports = class Node {
     }
 
     broadcastPendingTransaction(transaction) {
-        // code for broadcasting pending transaction to peers
+        for(let id in this.peers) {
+            let peerUrl = this.peers[id];
+            try { axios.post(`${peerUrl}/transactions/send`, transaction); }
+            catch (error) {  }
+        }
+    }
+
+    async notifyNewBlock(newBlock) {
+        for(let id in this.peers) {
+            let peerUrl = this.peers[id];
+            let data = this.getInfo();
+            data.newBlock = newBlock;
+            try { await axios.post(`${peerUrl}/peers/notify-new-block`, data); }
+            catch (error) { delete this.peers[id]; }
+        }
     }
 
     getChain() {
         return this.chain;
-    }
-
-    getPeers() {
-        return 0;
     }
 
     resetChain() {
@@ -43,7 +54,7 @@ module.exports = class Node {
             peers: Object.keys(this.peers).length,
             currentDifficulty: this.chain.currentDifficulty,
             blocksCount: this.chain.blocks.length,
-            cumulativeDifficulty: this.chain.cumulativeDifficulty(),
+            cumulativeDifficulty: this.chain.getCumulativeDifficulty(),
             confirmedTransactions: this.chain.getConfirmedTransactions().length,
             pendingTransactions: this.chain.pendingTransactions.length
         };
@@ -60,24 +71,26 @@ module.exports = class Node {
     }
 
     validatePeerJsonBlocks(blocks) {
+        let error = (msg) => { throw new Error(`Invalid Peer BlockChain: ${msg}`); };
+        let confirmedTransactions = {};
         let confirmedBalances = {};
         let validatedBlocks = [];
-        let error = (msg) => { throw new Error(`Invalid Peer BlockChain: ${msg}`); };
 
         // Validate the genesis block → should be exactly the same
-        if(JSON.stringify(this.chain.blocks[0]) !== JSON.stringify(Block.createFromJson(blocks[0]))) error('Genesis block did not match');
-        validatedBlocks.push(Block.createFromJson(blocks[0]));
+        if(JSON.stringify(BlockChain.createGenesisBlock()) !== JSON.stringify(Block.createFromJson(blocks[0]))) error('Genesis block did not match');
 
         // Validate each block from the first to the last
-        for(let i = 1; i < blocks.length; i++) {
-            let block = Block.createFromJson(blocks[i]);
+        for(let i = 0; i < blocks.length; i++) {
+            let block = blocks[i] = Block.createFromJson(blocks[i]);
+            let minerMaxReward = config.block_reward;
+            let minerReward = 0;
+            let isGenesisBlock = block.index === 0;
 
 
             // Validate that all block fields are present and have valid values
             if(typeof block.index !== 'number') error(`Invalid block[${i}].index value`);
             if(!Array.isArray(block.transactions)) error(`Invalid block[${i}].transactions value`);
             if(typeof block.difficulty !== 'number') error(`Invalid block[${i}].difficulty value`);
-            if(typeof block.prevBlockHash !== 'string') error(`Invalid block[${i}].prevBlockHash value`);
             if(typeof block.minedBy !== 'string') error(`Invalid block[${i}].minedBy value`);
             if(typeof block.blockDataHash !== 'string') error(`Invalid block[${i}].blockDataHash value`);
             if(typeof block.nonce !== 'number') error(`Invalid block[${i}].nonce value`);
@@ -88,6 +101,7 @@ module.exports = class Node {
             // Validate the transactions in the block
             for(let j = 0; j < block.transactions.length; j++) {
                 let transaction = block.transactions[j];
+                let isRewardTx = false;
 
 
                 // Validate transaction fields and their values, recalculate the transaction data hash, validate the signature
@@ -98,27 +112,37 @@ module.exports = class Node {
                 if(!utils.isISO8601Date(transaction.dateCreated)) error(`Invalid block[${i}].transaction[${j}].dateCreated value`);
                 if(typeof transaction.senderPubKey !== 'string') error(`Invalid block[${i}].transaction[${j}].senderPubKey value`);
                 if(!Array.isArray(transaction.senderSignature) && transaction.senderSignature.length !== 2) error(`Invalid block[${i}].transaction[${j}].senderSignature value`);
+                if(transaction.transactionDataHash !== transaction.getDataHash()) error(`Invalid block[${i}].transaction[${j}].transactionDataHash calculation`);
 
-                transaction = Transaction.createFromJson(transaction);
-                transaction.calculateDataHash();
-                if(!transaction.isValidSignature()) error(`Invalid block[${i}].transaction[${j}].senderSignatures`);
-
+                if(!isGenesisBlock) {
+                    // calculate miner current and max reward for the block
+                    minerMaxReward += transaction.fee;
+                    if(transaction.from === config.default_address && transaction.to === block.minedBy) {
+                        minerReward += transaction.value;
+                        isRewardTx = true;
+                    }
+                    else if(!transaction.isValidSignature()) error(`Invalid block[${i}].transaction[${j}].senderSignatures`);
+                }
 
                 // Re-execute all transactions, re-calculate the values of minedInBlockIndex and transferSuccessful fields
                 confirmedBalances[transaction.from] = confirmedBalances[transaction.from] || 0;
                 confirmedBalances[transaction.to] = confirmedBalances[transaction.to] || 0;
 
-                if(confirmedBalances[transaction.from] < transaction.fee) error(`An invalid transaction was found in block ${i}`);
+                if(!isGenesisBlock && !isRewardTx && confirmedBalances[transaction.from] < transaction.fee) error(`Invalid block[${i}].transaction[${j}] - not enough balance`);
                 confirmedBalances[transaction.from] -= transaction.fee;
 
                 transaction.minedInBlockIndex = block.index;
-                if(confirmedBalances[transaction.from] < transaction.value) transaction.transferSuccessful = false;
+                if(!isGenesisBlock && !isRewardTx && confirmedBalances[transaction.from] < transaction.value) transaction.transferSuccessful = false;
                 else {
                     confirmedBalances[transaction.from] -= transaction.value;
                     confirmedBalances[transaction.to] += transaction.value;
                     transaction.transferSuccessful = true;
                 }
+
+                if(confirmedTransactions[transaction.transactionDataHash]) error(`Invalid block[${i}].transaction[${j}] - duplicate`);
+                confirmedTransactions[transaction.transactionDataHash] = transaction;
             }
+            if(minerReward > minerMaxReward) error(`Invalid block[${i}] miner reward`);
 
 
             // Re-calculate the block data hash and block hash for each block
@@ -126,10 +150,14 @@ module.exports = class Node {
             block.calculateHash();
 
 
+            // Ensure the block hash matches the block difficulty
+            if(!block.isValidHashDifficulty()) error(`Invalid block[${i}].blockHash difficulty`);
+
             // Validate that prevBlockHash == the hash of the previous block
-            if(block.prevBlockHash !== blocks[i - 1].blockHash) error(`block[${i}].prevBlockHash did not match`);
+            if(!isGenesisBlock && block.prevBlockHash !== blocks[i - 1].blockHash) error(`block[${i}].prevBlockHash did not match`);
 
 
+            // add to validated blocks
             validatedBlocks.push(block);
         }
 
@@ -140,7 +168,7 @@ module.exports = class Node {
         let myInfo = this.getInfo();
 
         // sync blocks
-        if(myInfo.blocksCount < peerInfo.blocksCount) {
+        if(peerInfo.cumulativeDifficulty > myInfo.cumulativeDifficulty) {
             let peerBlocks = (await axios.get(`${peerInfo.nodeUrl}/blocks`)).data;
 
             // Re-calculate the cumulative difficulty of the incoming chain
@@ -181,10 +209,7 @@ module.exports = class Node {
         // connect back
         try { await axios.post(`${url}/peers/connect`, {peerUrl: this.selfUrl}); } catch (error) {}
 
-        // sync peer
-        await this.syncPeerByInfo(data);
-
         // resolve promise
-        return true;
+        return data;
     }
 };

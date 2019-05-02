@@ -1,5 +1,6 @@
 const express = require('express');
 const globals = require('../../globals');
+const utils = require('../libraries/utils');
 const Block = require('../classes/Block');
 const Miner = require('../classes/Miner');
 const Transaction = require('../classes/Transaction');
@@ -10,23 +11,25 @@ let candidateBlock = undefined;
 
 // endpoints here!
 app.get('/get-mining-job/:minerAddress', (req, res) => {
-
-    let currBlockIndex = chain.blocks.length;
-    let coinbaseTx     = Transaction.createCoinbaseTx();
-    let pendingTxs     = chain.pendingTransactions;
-    let difficulty     = chain.currentDifficulty;
-    let prevBlockHash  = chain.getLatestBlock().blockHash;
-    let minerAddress   = req.params.minerAddress;
-
-    candidateBlock = new Block(currBlockIndex, [coinbaseTx, pendingTxs],
-                               difficulty, prevBlockHash, minerAddress);
-
-    let miner = new Miner(minerAddress, difficulty);
-
-    chain.addMiningJob(candidateBlock.blockDataHash, currBlockIndex);
-    miner.mineBlock(candidateBlock);
-
-    res.json(candidateBlock);
+    let address = req.params.minerAddress;
+    try {
+        if(!utils.isValidAddress(address)) throw new Error('Invalid address');
+        let candidateBlock = globals.node.chain.createCandidateBlock(address);
+        res.json({
+            index: candidateBlock.index,
+            transactionsIncluded: candidateBlock.transactions.length,
+            difficulty: candidateBlock.difficulty,
+            expectedReward: candidateBlock.transactions[0].value,
+            rewardAddress: address,
+            blockDataHash: candidateBlock.blockDataHash
+        });
+    }
+    catch (error) {
+        res.status(400);
+        res.json({
+            errorMsg: error.message || 'Something went wrong'
+        });
+    }
 });
 
 app.get('/submit-mined-block', (req, res) => {
