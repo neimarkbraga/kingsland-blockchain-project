@@ -1,6 +1,7 @@
 const express = require('express');
 const globals = require('../../globals');
 const utils = require('../libraries/utils');
+const config = require('../../config');
 
 const Block = require('./../classes/Block');
 const Miner = require('./../classes/Miner');
@@ -9,6 +10,13 @@ const Transaction = require('./../classes/Transaction');
 let app = express.Router();
 
 // endpoints here!
+app.get('/', (req, res) => {
+    res.json({
+        node: globals.node,
+        confirmedBalances: globals.node.chain.getConfirmedBalances()
+    });
+});
+
 app.get("/reset-chain", (req, res) => {
 
     globals.node.resetChain();

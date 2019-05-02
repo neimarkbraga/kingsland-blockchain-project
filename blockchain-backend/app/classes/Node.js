@@ -4,11 +4,16 @@ const BlockChain = require('./Blockchain');
 
 module.exports = class Node {
 
-    constructor(selfUrl) {
-        this.nodeId  = utils.sha256(new Date().getTime() + Math.random());
-        this.selfUrl = selfUrl;
-        this.peers   = {};
-        this.chain   = new BlockChain();
+    constructor(options) {
+        options = options || {};
+        this.nodeId     = utils.sha256(new Date().getTime() + Math.random());
+        this.protocol   = options.protocol || 'http';
+        this.host       = options.host || '127.0.0.1';
+        this.port       = options.port || 5555;
+        this.selfUrl    = options.selfUrl || this.getUrl();
+        this.peers      = {};
+        this.chain      = new BlockChain();
+        this.chainId    = this.getChainId();
     }
 
     broadcastPendingTransaction(transaction) {
@@ -40,6 +45,16 @@ module.exports = class Node {
             confirmedTransactions: this.chain.getConfirmedTransactions().length,
             pendingTransactions: this.chain.pendingTransactions.length
         };
+    }
+
+    getUrl() {
+        let url = `${this.protocol}://${this.host}`;
+        if(this.port !== undefined) url += `:${this.port}`;
+        return url;
+    }
+
+    getChainId() {
+        return this.chain.blocks[0].blockHash;
     }
 
     async addPeerByUrl(url) {

@@ -118,6 +118,12 @@ module.exports = class BlockChain {
         return undefined;
     }
 
+    getConfirmedBalances() {
+        let balances = this.getAllBalances();
+        for(let address in  balances) balances[address] = balances[address].confirmedBalance;
+        return balances;
+    }
+
     getAllBalances() {
         let balances = {};
         let transactions = this.getAllTransactions();

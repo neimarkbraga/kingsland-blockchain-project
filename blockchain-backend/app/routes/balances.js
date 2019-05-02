@@ -4,9 +4,7 @@ let app = express.Router();
 
 // endpoints here!
 app.get('/', (req, res) => {
-    let balances = globals.node.chain.getAllBalances();
-    for(let address in  balances) balances[address] = balances[address].confirmedBalance;
-    res.json(balances);
+    res.json(globals.node.chain.getConfirmedBalances());
 });
 
 
