@@ -11,11 +11,9 @@
 
         <!-- Create Wallet -->
         <div id="createWalletTab" class="row center-align">
-            <form id="createWalletForm" class="col s12" v-on:submit.prevent="generateWallet">
-                <div class="row">
-                    <button class="btn blue center-align">Create New Wallet</button>
-                </div>
-            </form>
+            <div class="row">
+                <button class="btn blue center-align" v-on:click.prevent="generateWallet">Create New Wallet</button>
+            </div>
 
             <div class="row">
                 <div class="s4-offset s8" v-if="privKey">
@@ -28,20 +26,18 @@
 
         <!-- Load Wallet -->
         <div id="loadWalletTab" class="row center-align">
-            <form id="loadWalletForm" class="col s12" v-on:submit.prevent="loadWallet">
-                <div class="row">
-                    <div class="input-field col offset-s4 s4">
-                        <input id="privateKey" type="text" class="validate" name=privateKey v-model="inputPrivateKey">
-                        <label for="privateKey">Enter Private Key</label>
-                    </div>
+            <div class="row">
+                <div class="input-field col offset-s4 s4">
+                    <input id="privateKey" type="text" class="validate" name=privateKey v-model="inputPrivateKey">
+                    <label for="privateKey">Enter Private Key</label>
                 </div>
-                <div class="row">
-                    <button class="btn blue center-align">Load Wallet</button>
-                </div>
-            </form>
+            </div>
+            <div class="row">
+                <button class="btn blue center-align" v-on:click.prevent="loadWallet">Load Wallet</button>
+            </div>
 
             <div class="row">
-                <div class="s4-offset s8" v-if="walletLoaded === true">
+                <div class="s4-offset s8" v-if="enteredPrivateKey">
                     <p> {{"Your private key: " + enteredPrivateKey }} </p>
                     <p> {{"Decoded public Key: " + decodedPublicKey }} </p>
                     <p> {{"Decoded address: " + decodedAddress }} </p>
@@ -49,7 +45,8 @@
             </div>
         </div>
 
-        <!-- <div id="checkBalanceTab" class="row center-align">
+        <!-- Check Balance -->
+        <div id="checkBalanceTab" class="row center-align">
             <form class="col s12" v-on:submit.prevent="loadBalance">
                 <div class="row">
                     <div class="input-field col offset-s4 s4">
@@ -59,50 +56,55 @@
                 </div>
                 <div class="row">
                     <div class="input-field col offset-s4 s4">
-                        <input id="Node" type="text" class="validate" name=Node>
-                        <label for="Node">Enter Blockchain Node</label>
+                        <input id="Balance-Node" type="text" class="validate" name=Balance-Node>
+                        <label for="Balance-Node">Enter Blockchain Node</label>
                     </div>
                 </div>
                 <div class="row">
                     <button class="btn blue center-align">Check Balance</button>
                 </div>
             </form>
-        </div> -->
+        </div>
 
-        <!-- <div id="sendTransactionTab" class="row center-align">
-            <form class="col s12" v-on:submit.prevent="loadBalance">
-                <div class="row">
-                    <div class="input-field col offset-s4 s4">
-                        <input id="Sender" type="text" class="validate" name=Sender>
-                        <label for="Sender">Enter Sender</label>
-                    </div>
+        <!-- Send Transaction -->
+        <div id="sendTransactionTab" class="row center-align">
+            <div class="row">
+                <div class="input-field col offset-s4 s4">
+                    <input id="Sender" type="text" class="validate" name=Sender v-model="sender">
+                    <label for="Sender">Enter Sender</label>
                 </div>
-                <div class="row">
-                    <div class="input-field col offset-s4 s4">
-                        <input id="Recipient" type="text" class="validate" name=Recipient>
-                        <label for="Recipient">Enter Recipient</label>
-                    </div>
+            </div>
+            <div class="row">
+                <div class="input-field col offset-s4 s4">
+                    <input id="Recipient" type="text" class="validate" name=Recipient v-model="recipient">
+                    <label for="Recipient">Enter Recipient</label>
                 </div>
-                <div class="row">
-                    <div class="input-field col offset-s4 s4">
-                        <input id="Value" type="text" class="validate" name=Value>
-                        <label for="Value">Enter Value</label>
-                    </div>
+            </div>
+            <div class="row">
+                <div class="input-field col offset-s4 s4">
+                    <input id="Value" type="text" class="validate" name=Value v-model="value">
+                    <label for="Value">Enter Value</label>
                 </div>
-                <div class="row">
-                    <button class="btn blue center-align">Sign Transaction</button>
+            </div>
+            <div class="row">
+                <div class="input-field col offset-s4 s4">
+                    <input id="Data" type="text" class="validate" name=Data v-model="data">
+                    <label for="Data">Enter Data (optional)</label>
                 </div>
-                <div class="row">
-                    <div class="input-field col offset-s4 s4">
-                        <input id="Node" type="text" class="validate" name=Node>
-                        <label for="Node">Enter Blockchain Node</label>
-                    </div>
+            </div>
+            <div class="row">
+                <button class="btn blue center-align" v-on:click.prevent="signTransaction">Sign Transaction</button>
+            </div>
+            <div class="row">
+                <div class="input-field col offset-s4 s4">
+                    <input id="Node" type="text" class="validate" name=Node v-model="node">
+                    <label for="Node">Enter Blockchain Node</label>
                 </div>
-                <div class="row">
-                    <button class="btn blue center-align">Send Transaction</button>
-                </div>
-            </form>
-        </div> -->
+            </div>
+            <div class="row">
+                <button class="btn blue center-align" v-on:click.prevent="sendTransaction">Send Transaction</button>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -147,20 +149,30 @@ import { log } from 'util';
     const crypto = require('crypto');
     const elliptic = require('elliptic');
     const secp256k1 = elliptic.ec('secp256k1');
+    const axios = require('axios');
 
     export default {
         name: 'WalletPage',
         data() {
             return {
-                passphrase: null,
                 privKey: null,
                 pubKey: null,
                 address: null,
+
                 inputPrivateKey: null,
                 enteredPrivateKey: null,
                 decodedPublicKey: null,
                 decodedAddress: null,
-                walletLoaded: false
+
+                sender: null,
+                recipient: null,
+                value: null,
+                data: null,
+                node: null,
+                newTransaction: null,
+                transactionDataHash: null,
+                signedTransaction: null,
+
             }
         },
         methods: {
@@ -172,6 +184,14 @@ import { log } from 'util';
                 let publicKey = keyPair.getPublic().getX().toString(16);
                 publicKey += keyPair.getPublic().getY().isOdd()? '1' : '0';
                 return publicKey;
+            },
+            getPublicKeyPoint(compressedPublicKey) {
+                let x = compressedPublicKey.substring(0, 64);
+                let y = compressedPublicKey.substring(64);
+                return secp256k1.curve.pointFromX(x, parseInt(y));
+            },
+            sha256(data) {
+                return crypto.createHash('sha256').update(data.toString()).digest('hex');
             },
             ripemd160(data) {
                 return crypto.createHash('ripemd160').update(data).digest('hex');
@@ -188,8 +208,71 @@ import { log } from 'util';
                 this.enteredPrivateKey = this.inputPrivateKey;
                 this.decodedPublicKey  = this.privateKeyToPublicKey(this.enteredPrivateKey);
                 this.decodedAddress = this.publicKeyToAddress(this.decodedPublicKey);
-                this.walletLoaded = true;
-                console.log('Wallet Loaded');
+            },
+            signData(data, privKey) {
+                let keyPair = secp256k1.keyFromPrivate(privKey);
+                let signature = keyPair.sign(data);
+
+                return [
+                    signature.r.toString(16),
+                    signature.s.toString(16)
+                ];
+            },
+            decompressPublicKey(compressedPublicKey) {
+                let x = compressedPublicKey.substring(0, 64);
+                let y = compressedPublicKey.substring(64);
+                return secp256k1.curve.pointFromX(x, parseInt(y));
+            },
+            isValidSignature(data, publicKey, signature) {
+                let keyPair = secp256k1.keyFromPublic(this.getPublicKeyPoint(publicKey));
+                return keyPair.verify(data, {r: signature[0], s: signature[1]});
+            },
+            signTransaction() {
+                console.log('Sign Transaction');
+                const transactionInfo = {
+                    "from": this.sender,
+                    "to": this.recipient,
+                    "value": parseInt(this.value),
+                    "fee": 10,
+                    "dateCreated": new Date().toISOString(),
+                    "data": "",
+                    "senderPubKey": this.decodedPublicKey
+                }
+
+                this.transactionDataHash = this.sha256(JSON.stringify(transactionInfo))
+
+                const senderSignature = this.signData(this.transactionDataHash, this.enteredPrivateKey);
+
+                this.newTransaction = {
+                   ...transactionInfo,
+                    "transactionDataHash": this.transactionDataHash,
+                    "senderSignature": senderSignature
+                }
+
+                console.log(this.newTransaction);
+
+            },
+            sendTransaction() {
+                console.log('Sending Transction');
+                console.log(this.newTransaction);
+
+                if (!this.isValidSignature(this.transactionDataHash,
+                                           this.decodedPublicKey,
+                                           this.newTransaction.senderSignature)) {
+                    console.log('Invalid Signature in Created Transaction.');
+                    return;
+                }
+
+                console.log("Transaction verified");
+
+
+                axios.post(this.node + '/transactions/send', this.newTransaction)
+                .then(function (response) {
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
 
             }
         }
