@@ -36,7 +36,7 @@
 
         },
         mounted() {
-            // $('.sidenav').sidenav();
+            $('.sidenav').sidenav();
         }
     }
 </script>

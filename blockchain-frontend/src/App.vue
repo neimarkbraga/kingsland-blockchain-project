@@ -17,7 +17,7 @@
     }
 </script>
 <style lang="scss">
-    @import "./assets/materialize-css/sass/materialize";
+    @import "./assets/sass/materialize";
     html, body {
         padding: 0;
         margin: 0;
