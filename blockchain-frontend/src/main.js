@@ -1,5 +1,4 @@
-import './assets/jquery/dist/jquery';
-import './assets/materialize-css/dist/js/materialize';
+import 'materialize-css'
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router';

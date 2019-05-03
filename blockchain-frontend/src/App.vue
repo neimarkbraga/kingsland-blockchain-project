@@ -8,7 +8,6 @@
 <script>
     import AppHeader from './components/Layout/header';
     import AppFooter from './components/Layout/footer';
-
     export default {
         name: 'app',
         components: {
@@ -33,7 +32,6 @@
         flex: 0 0 0;
 
         main {
-            display: flex;
             flex-direction: column;
             width: 100%;
             flex: 1 0 auto;
