@@ -97,4 +97,8 @@ module.exports = class Transaction {
     isPending() {
         return this.minedInBlockIndex === undefined;
     }
+
+    sign(privateKey) {
+        this.senderSignature = utils.signData(this.transactionDataHash, privateKey);
+    }
 };

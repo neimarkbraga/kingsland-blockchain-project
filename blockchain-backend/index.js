@@ -32,6 +32,7 @@ app.use('/balances', require('./app/routes/balances'));
 app.use('/address', require('./app/routes/address'));
 app.use('/peers', require('./app/routes/peers'));
 app.use('/mining', require('./app/routes/mining'));
+app.use('/faucet', require('./app/routes/faucet'));
 
 
 // start server

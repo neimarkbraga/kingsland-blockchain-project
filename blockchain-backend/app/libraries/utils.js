@@ -61,5 +61,10 @@ module.exports = {
             diffStr += '0';
         }
         return diffStr;
+    },
+    signData(data, privateKey) {
+        let keyPair = secp256k1.keyFromPrivate(privateKey);
+        let signature = keyPair.sign(data);
+        return [signature.r.toString(16), signature.s.toString(16)];
     }
 };
