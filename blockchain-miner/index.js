@@ -79,7 +79,7 @@ let mine = async () => {
         console.log(colors.red(`ERROR: ${data.errorMsg || error.message || 'Unknown Error'}`));
         console.log(colors.red('=================================='));
     }
-    setTimeout(mine, 1000);
+    mine();
 };
 
 console.clear();
