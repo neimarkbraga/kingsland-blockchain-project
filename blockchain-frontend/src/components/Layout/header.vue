@@ -24,8 +24,9 @@
         data() {
             return {
                 links: [
+                    {name: 'Explorer', path: '/explorer'},
                     {name: 'Wallet', path: '/wallet'},
-                    {name: 'Explorer', path: '/explorer'}
+                    {name: 'Faucet', path: '/faucet'}
                 ]
             }
         },
