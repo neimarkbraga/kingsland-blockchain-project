@@ -204,6 +204,14 @@ module.exports = class BlockChain {
         return this.blocks[index];
     }
 
+    getBlockByHash(hash) {
+        for(let i = 0; i < this.blocks.length; i++) {
+            let block = this.blocks[i];
+            if(block.blockHash === hash) return block;
+        }
+        return undefined;
+    }
+
     getBlocks() {
         return this.blocks;
     }

@@ -1,5 +1,6 @@
 const express = require('express');
 const globals = require('../../globals');
+const utils = require('../libraries/utils');
 let app = express.Router();
 
 // endpoints here!
@@ -9,6 +10,54 @@ app.get('/test', async (req, res) => {
 
 app.get('/info', async (req, res) => {
     res.json(globals.node.getInfo());
+});
+
+app.get('/search', async (req, res) => {
+    let query = req.query;
+    let keyword = query.keyword || '';
+
+
+    // search address
+    let balance = globals.node.chain.getAddressBalance(keyword);
+    if(balance.safeBalance || balance.confirmedBalance || balance.pendingBalance) {
+        res.json({
+            type: 'address',
+            data: {
+                address: keyword,
+                balance
+            }
+        });
+        return;
+    }
+
+
+    // search transaction
+    let transaction = globals.node.chain.getTransactionByDataHash(keyword);
+    if(transaction) {
+        res.json({
+            type: 'transaction',
+            data: transaction
+        });
+        return;
+    }
+
+
+    // search block
+    let block = globals.node.chain.getBlockByHash(keyword);
+    if(block) {
+        res.json({
+            type: 'block',
+            data: block
+        });
+        return;
+    }
+
+
+    // send empty
+    res.json({
+        type: null,
+        data: null
+    });
 });
 
 module.exports = app;
