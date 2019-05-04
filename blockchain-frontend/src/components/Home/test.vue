@@ -31,15 +31,29 @@
             </div>
         </div>
 
+        <div id="loadWalletTab" class="row center-align">
+            <div class="row">
+                <div class="input-field col offset-s4 s4">
+                    <input id="recipient" type="text" class="validate" name=recipient v-model="recipient">
+                    <label for="recipient">Enter Recipient</label>
+                </div>
+            </div>
+            <div class="row">
+                <button class="btn blue center-align" v-on:click.prevent="sendBalance">Send Balance</button>
+            </div>
+        </div>
+
     </div>
 </template>
 <script>
     import AppCaptcha from '../Plugins/captcha';
+    const axios = require('axios');
 
     export default {
         data() {
             return {
-                captchaResponse: ''
+                captchaResponse: '',
+                recipient: undefined
             }
         },
         watch: {
@@ -55,6 +69,19 @@
                 let vm = this;
                 vm.$refs.Captcha.reset();
                 vm.captchaResponse = '';
+            },
+            sendBalance() {
+                console.log('Send Balance');
+                axios.post('http://localhost:5555/faucet/', {
+                    address: this.recipient,
+                    captcha: this.captchaResponse,
+                })
+                .then(function (response) {
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
             }
         },
         components: {

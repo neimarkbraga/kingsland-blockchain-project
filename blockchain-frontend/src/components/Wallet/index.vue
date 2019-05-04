@@ -145,7 +145,7 @@
 
 
 <script>
-import { log } from 'util';
+    import { log } from 'util';
     const crypto = require('crypto');
     const elliptic = require('elliptic');
     const secp256k1 = elliptic.ec('secp256k1');
