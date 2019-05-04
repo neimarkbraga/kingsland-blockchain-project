@@ -33,6 +33,40 @@ let router = new Router({
             }
         },
         {
+            path: '/explorer',
+            component: resolve => {
+                require.ensure(['@/components/Explorer/index.vue'], () => {
+                    resolve(require('@/components/Explorer/index.vue'));
+                });
+            }
+        },
+        {
+            name: 'confirmed',
+            path: '/explorer/transactions/confirmed',
+            component: resolve => {
+                require.ensure(['@/components/Explorer/Transactions/confirmed.vue'], () => {
+                    resolve(require('@/components/Explorer/Transactions/confirmed.vue'));
+                });
+            }
+        },
+        {
+            name: 'pending',
+            path: '/explorer/transactions/pending',
+            component: resolve => {
+                require.ensure(['@/components/Explorer/Transactions/pending.vue'], () => {
+                    resolve(require('@/components/Explorer/Transactions/pending.vue'));
+                });
+            }
+        },
+        {
+            path: '/explorer/transactions/:txhash',
+            component: resolve => {
+                require.ensure(['@/components/Explorer/Transactions/txhash.vue'], () => {
+                    resolve(require('@/components/Explorer/Transactions/txhash.vue'));
+                });
+            }
+        },
+        {
             path: '*',
             component: resolve => {
                 require.ensure(['@/components/Errors/page_not_found.vue'], () => {
