@@ -17,6 +17,14 @@ let router = new Router({
             }
         },
         {
+            path: '/test',
+            component: resolve => {
+                require.ensure(['@/components/Home/test.vue'], () => {
+                    resolve(require('@/components/Home/test.vue'));
+                });
+            }
+        },
+        {
             path: '/wallet',
             component: resolve => {
                 require.ensure(['@/components/Wallet/index.vue'], () => {
