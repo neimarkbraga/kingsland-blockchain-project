@@ -50,13 +50,13 @@
             <form class="col s12" v-on:submit.prevent="loadBalance">
                 <div class="row">
                     <div class="input-field col offset-s4 s4">
-                        <input id="Address" type="text" class="validate" name=Address>
+                        <input id="Address" type="text" class="validate" name=Address v-model="balanceAddress">
                         <label for="Address">Enter Address</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col offset-s4 s4">
-                        <input id="Balance-Node" type="text" class="validate" name=Balance-Node>
+                        <input id="Balance-Node" type="text" class="validate" name=Balance-Node v-model="balanceNode">
                         <label for="Balance-Node">Enter Blockchain Node</label>
                     </div>
                 </div>
@@ -145,7 +145,6 @@
 
 
 <script>
-    import { log } from 'util';
     const crypto = require('crypto');
     const elliptic = require('elliptic');
     const secp256k1 = elliptic.ec('secp256k1');
@@ -155,15 +154,22 @@
         name: 'WalletPage',
         data() {
             return {
+                // Create Wallet
                 privKey: null,
                 pubKey: null,
                 address: null,
 
+                // Load Wallet
                 inputPrivateKey: null,
                 enteredPrivateKey: null,
                 decodedPublicKey: null,
                 decodedAddress: null,
 
+                // Check Balance
+                balanceAddress: null,
+                balanceNode: null,
+
+                // Send Transaction
                 sender: null,
                 recipient: null,
                 value: null,
@@ -208,6 +214,15 @@
                 this.enteredPrivateKey = this.inputPrivateKey;
                 this.decodedPublicKey  = this.privateKeyToPublicKey(this.enteredPrivateKey);
                 this.decodedAddress = this.publicKeyToAddress(this.decodedPublicKey);
+            },
+            loadBalance() {
+                axios.get(this.balanceNode + '/address/' + this.balanceAddress + '/balance')
+                .then(function (response) {
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
             },
             signData(data, privKey) {
                 let keyPair = secp256k1.keyFromPrivate(privKey);
@@ -275,6 +290,9 @@
                 });
 
             }
+        },
+        mounted() {
+            $('.tabs').tabs();
         }
     }
 </script>
