@@ -5,17 +5,17 @@
                 <router-link to="/" class="brand-logo">KS Project</router-link>
                 <a href="#" data-target="mobile-sidenav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
                 <ul class="right hide-on-med-and-down">
-                    <li v-for="link in links">
-                        <router-link :to="link.path">{{ link.name }}</router-link>
-                    </li>
+                    <router-link tag="li" v-for="link in links" :to="link.path" :key="link.name">
+                        <a>{{ link.name }}</a>
+                    </router-link>
                 </ul>
             </div>
         </nav>
 
         <ul class="sidenav" id="mobile-sidenav">
-            <li v-for="link in links">
-                <router-link :to="link.path">{{ link.name }}</router-link>
-            </li>
+            <router-link tag="li" v-for="link in links" :to="link.path" :key="link.name">
+                <a>{{ link.name }}</a>
+            </router-link>
         </ul>
     </header>
 </template>

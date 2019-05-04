@@ -57,7 +57,7 @@
             }
         },
         watch: {
-            captchaResponse(value) {
+            captchaResponse() {
                 setTimeout(() => {
                     window.M.updateTextFields();
                     window.M.textareaAutoResize($('textarea'));
