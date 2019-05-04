@@ -1,6 +1,6 @@
 module.exports = {
     genesis_date: '2018-01-01T00:00:00.000Z',
-    start_difficulty: 5,
+    start_difficulty: 4,
     safe_confirms: 6,
     block_reward: 5000000,
     coinbase_tx_data: 'coinbase tx',

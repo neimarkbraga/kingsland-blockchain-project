@@ -67,6 +67,22 @@ let router = new Router({
             }
         },
         {
+            path: '/explorer/blocks',
+            component: resolve => {
+                require.ensure(['@/components/Explorer/Blocks/index.vue'], () => {
+                    resolve(require('@/components/Explorer/Blocks/index.vue'));
+                });
+            }
+        },
+        {
+            path: '/explorer/blocks/:index',
+            component: resolve => {
+                require.ensure(['@/components/Explorer/Blocks/details.vue'], () => {
+                    resolve(require('@/components/Explorer/Blocks/details.vue'));
+                });
+            }
+        },
+        {
             path: '*',
             component: resolve => {
                 require.ensure(['@/components/Errors/page_not_found.vue'], () => {

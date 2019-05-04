@@ -21,7 +21,14 @@
     </div>
 
     <div class="row">
-        <div class="col offset-s4">
+        <div class="col offset-s3">
+            <router-link to="/explorer/blocks">
+                <button class="waves-effect waves-light btn-large blue">
+                    Blocks
+                </button>
+            </router-link>
+        </div>
+        <div class="col">
             <router-link :to="{name: 'confirmed'}">
                 <button class="waves-effect waves-light btn-large blue">
                     Confirmed Transactions

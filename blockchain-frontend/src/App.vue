@@ -38,4 +38,20 @@
             position: relative;
         }
     }
+
+    .breadcrumb {
+        &:last-child {font-weight: 500;} // More visible active links
+        &.dark { // Add a "dark mode" styling for bredcrumbs
+            color:rgba(0,0,0,0.5);
+            &:before {
+                color:rgba(0,0,0,0.2);
+                vertical-align: middle;
+            }
+            &:last-child {
+                color:rgba(0,0,0,1);
+            }
+            line-height: 64px; // Line-height fixes
+            i {line-height: 64px;} // Line-height fixes
+        }
+    }
 </style>
