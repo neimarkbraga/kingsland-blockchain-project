@@ -1,0 +1,11 @@
+.truncated-table{
+  width: 100%;
+  white-space: nowrap;
+  table-layout: fixed;
+
+
+  td, th {
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}
