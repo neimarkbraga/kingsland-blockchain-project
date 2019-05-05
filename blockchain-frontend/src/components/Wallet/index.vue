@@ -12,14 +12,33 @@
         <!-- Create Wallet -->
         <div id="createWalletTab" class="row center-align">
             <div class="row">
-                <button class="btn blue center-align" v-on:click.prevent="generateWallet">Create New Wallet</button>
+                <div class="col s12">
+                    <button class="btn-large blue center-align" v-on:click.prevent="generateWallet">Create New Wallet</button>
+                </div>
             </div>
 
             <div class="row">
-                <div class="s4-offset s8" v-if="privKey">
-                    <p> {{"Your new private Key: " + privKey }} </p>
-                    <p> {{"Extracted public Key: " + pubKey }} </p>
-                    <p> {{"Extracted address: " + address }} </p>
+                <div class="col offset-s3 s6">
+                    <div class="card">
+                        <div class="card-content">
+                            <table class="highlight">
+                                <tbody>
+                                    <tr>
+                                        <td><b>Private Key</b></td>
+                                        <td>{{ privKey }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Public Key</b></td>
+                                        <td>{{ pubKey }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Address</b></td>
+                                        <td>{{ address }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -33,14 +52,31 @@
                 </div>
             </div>
             <div class="row">
-                <button class="btn blue center-align" v-on:click.prevent="loadWallet">Load Wallet</button>
+                <button class="btn-large blue center-align" v-on:click.prevent="loadWallet">Load Existing Wallet</button>
             </div>
 
             <div class="row">
-                <div class="s4-offset s8" v-if="enteredPrivateKey">
-                    <p> {{"Your private key: " + enteredPrivateKey }} </p>
-                    <p> {{"Decoded public Key: " + decodedPublicKey }} </p>
-                    <p> {{"Decoded address: " + decodedAddress }} </p>
+                <div class="col offset-s3 s6">
+                    <div class="card">
+                        <div class="card-content">
+                            <table class="highlight">
+                                <tbody>
+                                    <tr>
+                                        <td><b>Private Key</b></td>
+                                        <td>{{ enteredPrivateKey }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Public Key</b></td>
+                                        <td>{{ decodedPublicKey }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Address</b></td>
+                                        <td>{{ decodedAddress }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -61,7 +97,32 @@
                     </div>
                 </div>
                 <div class="row">
-                    <button class="btn blue center-align">Check Balance</button>
+                    <button class="btn-large blue center-align">Check Balance</button>
+                </div>
+
+                <div class="row">
+                    <div class="col offset-s3 s6">
+                        <div class="card">
+                            <div class="card-content">
+                                <table class="highlight">
+                                    <tbody>
+                                        <tr>
+                                            <td><b>Confirmed Balance</b></td>
+                                            <td v-if="balance">{{ balance.confirmedBalance }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Pending Balance</b></td>
+                                            <td v-if="balance">{{ balance.pendingBalance }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Safe Balance</b></td>
+                                            <td v-if="balance">{{ balance.safeBalance }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -93,7 +154,7 @@
                 </div>
             </div>
             <div class="row">
-                <button class="btn blue center-align" v-on:click.prevent="signTransaction">Sign Transaction</button>
+                <button class="btn-large blue center-align" v-on:click.prevent="signTransaction">Sign Transaction</button>
             </div>
             <div class="row">
                 <div class="input-field col offset-s4 s4">
@@ -102,7 +163,7 @@
                 </div>
             </div>
             <div class="row">
-                <button class="btn blue center-align" v-on:click.prevent="sendTransaction">Send Transaction</button>
+                <button class="btn-large blue center-align" v-on:click.prevent="sendTransaction">Send Transaction</button>
             </div>
         </div>
     </div>
@@ -138,9 +199,22 @@
         background-color:#64b5f6 ;
     } /*Color of underline*/
 
-    #createWalletForm {
+    #createWalletTab {
+        padding-top: 20vh;
+    }
+
+    #checkBalanceTab {
+        padding-top: 15vh;
+    }
+
+    #loadWalletTab {
         padding-top: 18vh;
     }
+
+    #sendTransactionTab {
+        padding-top: 7vh;
+    }
+
 </style>
 
 
@@ -168,6 +242,7 @@
                 // Check Balance
                 balanceAddress: null,
                 balanceNode: null,
+                balance: null,
 
                 // Send Transaction
                 sender: null,
@@ -215,14 +290,15 @@
                 this.decodedPublicKey  = this.privateKeyToPublicKey(this.enteredPrivateKey);
                 this.decodedAddress = this.publicKeyToAddress(this.decodedPublicKey);
             },
-            loadBalance() {
-                axios.get(this.balanceNode + '/address/' + this.balanceAddress + '/balance')
-                .then(function (response) {
-                    console.log(response);
-                })
-                .catch(function (error) {
+            async loadBalance() {
+                try {
+                    const response = await axios.get(this.balanceNode + '/address/' + this.balanceAddress + '/balance');
+                    this.balance = response.data;
+                }
+                catch (error) {
                     console.log(error);
-                });
+                }
+
             },
             signData(data, privKey) {
                 let keyPair = secp256k1.keyFromPrivate(privKey);
@@ -243,7 +319,6 @@
                 return keyPair.verify(data, {r: signature[0], s: signature[1]});
             },
             signTransaction() {
-                console.log('Sign Transaction');
                 const transactionInfo = {
                     "from": this.sender,
                     "to": this.recipient,
@@ -263,31 +338,21 @@
                     "transactionDataHash": this.transactionDataHash,
                     "senderSignature": senderSignature
                 }
-
-                console.log(this.newTransaction);
-
             },
-            sendTransaction() {
-                console.log('Sending Transction');
-                console.log(this.newTransaction);
-
+            async sendTransaction() {
                 if (!this.isValidSignature(this.transactionDataHash,
                                            this.decodedPublicKey,
                                            this.newTransaction.senderSignature)) {
-                    console.log('Invalid Signature in Created Transaction.');
                     return;
                 }
 
-                console.log("Transaction verified");
-
-
-                axios.post(this.node + '/transactions/send', this.newTransaction)
-                .then(function (response) {
+                try {
+                    const response = axios.post(this.node + '/transactions/send', this.newTransaction)
                     console.log(response);
-                })
-                .catch(function (error) {
+                }
+                catch (error) {
                     console.log(error);
-                });
+                };
 
             }
         },
