@@ -11,13 +11,14 @@
             <router-link :to="'/explorer/blocks/' + $route.params.index" class="breadcrumb dark">{{ $route.params.index }}</router-link>
         </div>
 
-        <!-- content -->
+        <!-- block details -->
         <div class="card">
             <div class="card-content">
 
                 <!-- title -->
                 <div class="card-title">
-                    Block {{ $route.params.index }}
+                    <b>Block: </b>
+                    <i>{{ $route.params.index }}</i>
                 </div>
 
                 <!-- loading -->
@@ -64,13 +65,17 @@
                                 </tr>
                                 <tr>
                                     <th>Mined By</th>
-                                    <td>{{ block.minedBy }}</td>
+                                    <td>
+                                        <router-link :to="'/explorer/address/' + block.minedBy">
+                                            {{ block.minedBy }}
+                                        </router-link>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>Block Hash</th>
                                     <td>{{ block.blockHash }}</td>
                                 </tr>
-                                <tr>
+                                <tr v-if="block.prevBlockHash">
                                     <th>Previous Block Hash</th>
                                     <td>{{ block.prevBlockHash }}</td>
                                 </tr>
@@ -95,6 +100,59 @@
                 </div>
             </div>
         </div>
+
+        <!-- block transactions -->
+        <div v-if="!status.loading && !status.error" class="card">
+            <div class="card-content">
+
+                <!-- title -->
+                <div class="card-title">
+                    <b>Transactions</b>
+                </div>
+
+
+                <table class="truncated-table striped centered">
+                    <thead>
+                    <tr>
+                        <th>Hash</th>
+                        <th>Age</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Value</th>
+                        <th>Fee</th>
+                        <th>Transfer</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(transaction, index) in block.transactions" :key="index">
+                        <td>
+                            <router-link :to="'/explorer/transactions/' + transaction.transactionDataHash">
+                                {{ transaction.transactionDataHash }}
+                            </router-link>
+                        </td>
+                        <td>{{ transaction.age }}</td>
+                        <td>
+                            <router-link :to="'/explorer/address/' + transaction.from">
+                                {{ transaction.from }}
+                            </router-link>
+                        </td>
+                        <td>
+                            <router-link :to="'/explorer/address/' + transaction.to">
+                                {{ transaction.to }}
+                            </router-link>
+                        </td>
+                        <td>{{ transaction.value }}</td>
+                        <td>{{ transaction.fee }}</td>
+                        <td>
+                            <span v-if="transaction.transferSuccessful" class="new badge green" data-badge-caption="Success"></span>
+                            <span v-else class="new badge red" data-badge-caption="Failed"></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
 
         <!-- spacer -->
         <div style="height: 50px;"></div>
@@ -126,6 +184,10 @@
                     let response = await axios.get(`${url}/blocks/${vm.$route.params.index}`);
                     vm.block = response.data;
                     vm.block.age = timeago.format(vm.block.dateCreated);
+                    vm.block.transactions = vm.block.transactions.map(transaction => {
+                        transaction.age = timeago.format(transaction.dateCreated);
+                        return transaction;
+                    });
                 }
                 catch (error) {
                     vm.status.error = utils.getErrorMessage(error);

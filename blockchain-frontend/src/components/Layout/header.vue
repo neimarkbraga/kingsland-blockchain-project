@@ -1,6 +1,6 @@
 <template>
     <header>
-        <nav class="blue">
+        <nav>
             <div class="container nav-wrapper">
                 <router-link to="/" class="brand-logo">KS Project</router-link>
                 <a href="#" data-target="mobile-sidenav" class="sidenav-trigger"><i class="material-icons">menu</i></a>

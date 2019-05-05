@@ -16,8 +16,8 @@
 
                 <!-- title -->
                 <div class="card-title">
-                    <span v-if="blocks.length">{{ blocks.length }} </span>
-                    <span>Blocks</span>
+                    <b>Blocks</b>
+                    <span v-if="blocks.length" class="new badge blue" data-badge-caption="">Total: {{ blocks.length }}</span>
                 </div>
 
                 <!-- loading -->
@@ -48,14 +48,15 @@
 
                     <!-- ready -->
                     <div v-else>
-                        <table class="responsive-table striped">
+                        <table class="truncated-table striped centered">
                             <thead>
                             <tr>
                                 <th>Height</th>
+                                <th>Hash</th>
+                                <th>Mined By</th>
                                 <th>Age</th>
                                 <th>Txn</th>
-                                <th>Hash</th>
-                                <th>Action</th>
+                                <th>Difficulty</th>
                             </tr>
                             </thead>
 
@@ -63,16 +64,24 @@
                                 <tr v-for="(block, index) in blocks"
                                     v-if="index < showCount"
                                     :key="index">
-                                    <td>{{ block.index }}</td>
-                                    <td>{{ block.age }}</td>
-                                    <td>{{ block.transactions.length }}</td>
-                                    <td>{{ block.blockHash }}</td>
                                     <td>
-                                        <router-link :to="'/explorer/blocks/' + block.index"
-                                                     class="btn btn-small">
-                                            View Details
+                                        <router-link :to="'/explorer/blocks/' + block.index">
+                                            {{ block.index }}
                                         </router-link>
                                     </td>
+                                    <td>
+                                        <router-link :to="'/explorer/blocks/' + block.index">
+                                            {{ block.blockHash }}
+                                        </router-link>
+                                    </td>
+                                    <td>
+                                        <router-link :to="'/explorer/address/' + block.minedBy">
+                                            {{ block.minedBy }}
+                                        </router-link>
+                                    </td>
+                                    <td>{{ block.age }}</td>
+                                    <td>{{ block.transactions.length }}</td>
+                                    <td>{{ block.difficulty }}</td>
                                 </tr>
                             </tbody>
                         </table>

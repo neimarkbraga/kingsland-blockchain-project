@@ -1,5 +1,5 @@
 <template>
-    <footer class="page-footer blue no-padding">
+    <footer class="page-footer no-padding">
         <!--<div class="container">
             <div class="row">
                 <div class="col l6 s12">
