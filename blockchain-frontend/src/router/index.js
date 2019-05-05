@@ -59,6 +59,7 @@ let router = new Router({
             }
         },
         {
+            name: 'txhash',
             path: '/explorer/transactions/:txhash',
             component: resolve => {
                 require.ensure(['@/components/Explorer/Transactions/txhash.vue'], () => {
