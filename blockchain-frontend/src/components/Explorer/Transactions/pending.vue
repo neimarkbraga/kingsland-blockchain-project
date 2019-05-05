@@ -2,7 +2,7 @@
     <div class="container">
         <div>
             <router-link to="/explorer" class="breadcrumb dark">Explorer</router-link>
-            <router-link :to="{name: 'pending'}" class="breadcrumb dark">Transactions</router-link>
+            <router-link :to="{name: 'pending'}" class="breadcrumb dark">Pending Transactions</router-link>
         </div>
 
         <div class="row" v-if="this.transactions">
@@ -27,7 +27,9 @@
                                 </router-link>
                             </td>
                             <td>
-                                {{ transaction.minedInBlockIndex }}
+                                <router-link :to="'/explorer/blocks/' + transaction.minedInBlockIndex">
+                                    {{ transaction.minedInBlockIndex }}
+                                </router-link>
                             </td>
                             <td>
                                 {{ transaction.age }}

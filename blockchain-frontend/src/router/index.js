@@ -84,6 +84,14 @@ let router = new Router({
             }
         },
         {
+            path: '/explorer/address/:address',
+            component: resolve => {
+                require.ensure(['@/components/Explorer/Address/index.vue'], () => {
+                    resolve(require('@/components/Explorer/Address/index.vue'));
+                });
+            }
+        },
+        {
             path: '*',
             component: resolve => {
                 require.ensure(['@/components/Errors/page_not_found.vue'], () => {

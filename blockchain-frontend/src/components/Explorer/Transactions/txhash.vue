@@ -1,9 +1,13 @@
 <template>
     <div class="container">
-        <div class="col s12">
-            <router-link to="/explorer" class="breadcrumb dark">Explorer</router-link>
-            <router-link :to="{name: 'confirmed'}" class="breadcrumb dark">Transactions</router-link>
-            <router-link :to="'/explorer/transactions/' + $route.params.txhash" class="breadcrumb dark">{{ this.$route.params.txhash }}</router-link>
+        <div class="row">
+            <div class="col s12">
+                <router-link to="/explorer" class="breadcrumb dark">Explorer</router-link>
+                <router-link :to="{name: 'confirmed'}" class="breadcrumb dark">Confirmed Transactions</router-link>
+                <router-link :to="'/explorer/transactions/' + $route.params.txhash" class="breadcrumb dark">
+                    {{ this.$route.params.txhash }}
+                </router-link>
+            </div>
         </div>
 
         <div v-if="this.transaction" class="row tx-container">
@@ -16,17 +20,22 @@
                         </span>
 
                         <table class="highlight">
-                            <thead>
-
-                            </thead>
                             <tbody>
                                 <tr>
                                     <td><b>From:</b></td>
-                                    <td>{{ transaction.from }}</td>
+                                    <td>
+                                        <router-link :to="'/explorer/address/' + transaction.from">
+                                            {{ transaction.from }}
+                                        </router-link>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td><b>To:</b></td>
-                                    <td>{{ transaction.to }}</td>
+                                    <td>
+                                        <router-link :to="'/explorer/address/' + transaction.to">
+                                            {{ transaction.to }}
+                                        </router-link>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td><b>Value:</b></td>
@@ -59,10 +68,6 @@
 </template>
 
 <style scoped>
-    .tx-container {
-        padding-top: 5vh;
-    }
-
     table {
         margin-top: 5vh;
     }

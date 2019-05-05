@@ -1,8 +1,10 @@
 <template>
     <div class="container">
-        <div>
-            <router-link to="/explorer" class="breadcrumb dark">Explorer</router-link>
-            <router-link :to="{name: 'confirmed'}" class="breadcrumb dark">Transactions</router-link>
+        <div class="row">
+            <div class="col s12">
+                <router-link to="/explorer" class="breadcrumb dark">Explorer</router-link>
+                <router-link :to="{name: 'confirmed'}" class="breadcrumb dark">Confirmed Transactions</router-link>
+            </div>
         </div>
 
         <div class="row">
@@ -27,16 +29,22 @@
                                 </router-link>
                             </td>
                             <td>
-                                {{ transaction.minedInBlockIndex }}
+                                <router-link :to="'/explorer/blocks/' + transaction.minedInBlockIndex">
+                                    {{ transaction.minedInBlockIndex }}
+                                </router-link>
                             </td>
                             <td>
                                 {{ transaction.age }}
                             </td>
                             <td class="truncate-td">
-                                {{ transaction.from }}
+                                <router-link :to="'/explorer/address/' + transaction.from">
+                                    {{ transaction.from }}
+                                </router-link>
                             </td>
                             <td class="truncate-td">
-                                {{ transaction.to }}
+                                <router-link :to="'/explorer/address/' + transaction.to">
+                                    {{ transaction.to }}
+                                </router-link>
                             </td>
                             <td>
                                 {{ transaction.value }}
