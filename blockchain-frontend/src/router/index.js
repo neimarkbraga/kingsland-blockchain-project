@@ -92,6 +92,15 @@ let router = new Router({
             }
         },
         {
+            name: 'network',
+            path: '/explorer/network',
+            component: resolve => {
+                require.ensure(['@/components/Explorer/Network/index.vue'], () => {
+                    resolve(require('@/components/Explorer/Network/index.vue'));
+                });
+            }
+        },
+        {
             path: '*',
             component: resolve => {
                 require.ensure(['@/components/Errors/page_not_found.vue'], () => {

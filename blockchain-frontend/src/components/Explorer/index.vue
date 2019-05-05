@@ -42,6 +42,13 @@
                 </button>
             </router-link>
         </div>
+        <div class="col">
+            <router-link :to="{name: 'network'}">
+                <button class="waves-effect waves-light btn-large blue">
+                    Network Information
+                </button>
+            </router-link>
+        </div>
     </div>
 </div>
 </template>

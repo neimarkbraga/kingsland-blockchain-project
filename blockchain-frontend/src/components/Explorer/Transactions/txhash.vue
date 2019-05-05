@@ -5,18 +5,18 @@
                 <router-link to="/explorer" class="breadcrumb dark">Explorer</router-link>
                 <router-link :to="{name: 'confirmed'}" class="breadcrumb dark">Confirmed Transactions</router-link>
                 <router-link :to="'/explorer/transactions/' + $route.params.txhash" class="breadcrumb dark">
-                    {{ this.$route.params.txhash }}
+                    {{ $route.params.txhash }}
                 </router-link>
             </div>
         </div>
 
-        <div v-if="this.transaction" class="row tx-container">
+        <div v-if="transaction" class="row tx-container">
             <div class="col s12">
                 <div class="card">
                     <div class="card-content">
                         <span class="card-title">
                             <b>Tx: </b>
-                            <i>{{ this.transaction.transactionDataHash }}</i>
+                            <i>{{ transaction.transactionDataHash }}</i>
                         </span>
 
                         <table class="highlight">
