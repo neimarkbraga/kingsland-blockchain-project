@@ -7,7 +7,7 @@
 
         <div class="row" v-if="this.transactions">
             <div class="col s12">
-                <table class="responsive-table striped centered">
+                <table class="truncated-table striped centered">
                     <thead>
                         <tr>
                             <th id="transactionDataHash">Txn Hash</th>
@@ -21,7 +21,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="transaction in transactions" v-bind:key="transaction.transactionDataHash">
-                            <td class="truncate-td">
+                            <td>
                                 <router-link :to="'/explorer/transactions/' + transaction.transactionDataHash">
                                     {{ transaction.transactionDataHash }}
                                 </router-link>
@@ -34,10 +34,10 @@
                             <td>
                                 {{ transaction.age }}
                             </td>
-                            <td class="truncate-td">
+                            <td>
                                 {{ transaction.from }}
                             </td>
-                            <td class="truncate-td">
+                            <td>
                                 {{ transaction.to }}
                             </td>
                             <td>
@@ -55,45 +55,6 @@
 </template>
 
 <style scoped>
-
-    #transactionDataHash {
-        width: 12vw;
-    }
-
-    #minedInBlockIndex {
-        width: 1vw;
-    }
-
-    #age {
-        width: 5vw
-    }
-
-    #from {
-        width: 11vw;
-    }
-
-    #to {
-        width: 11vw;
-    }
-
-    #value {
-        width: 8vw;
-    }
-
-    #fee {
-        width: 3.5vw;
-    }
-
-
-    td {
-        max-width: 10px;
-    }
-
-    .truncate-td {
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-    }
 </style>
 
 <script>

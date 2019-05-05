@@ -45,53 +45,54 @@
                         <span class="card-title">
                             <b>Transactions</b>
                         </span>
+
+                        <table v-if="transactions" class="truncated-table striped centered">
+                            <thead>
+                                <tr>
+                                    <th id="transactionDataHash">Txn Hash</th>
+                                    <th id="minedInBlockIndex">Block</th>
+                                    <th id="age">Age</th>
+                                    <th id="from">From</th>
+                                    <th id="to">To</th>
+                                    <th id="value">Value</th>
+                                    <th id="fee">Txn Fee</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="transaction in transactions" v-bind:key="transaction.transactionDataHash">
+                                    <td>
+                                        <router-link :to="'/explorer/transactions/' + transaction.transactionDataHash">
+                                            {{ transaction.transactionDataHash }}
+                                        </router-link>
+                                    </td>
+                                    <td>
+                                        <router-link :to="'/explorer/blocks/' + transaction.minedInBlockIndex">
+                                            {{ transaction.minedInBlockIndex }}
+                                        </router-link>
+                                    </td>
+                                    <td>
+                                        {{ transaction.age }}
+                                    </td>
+                                    <td>
+                                        <router-link :to="'/explorer/address/' + transaction.from">
+                                            {{ transaction.from }}
+                                        </router-link>
+                                    </td>
+                                    <td>
+                                        <router-link :to="'/explorer/address/' + transaction.to">
+                                            {{ transaction.to }}
+                                        </router-link>
+                                    </td>
+                                    <td>
+                                        {{ transaction.value }}
+                                    </td>
+                                    <td>
+                                        {{ transaction.fee }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <table v-if="transactions" class="responsive-table striped centered">
-                        <thead>
-                            <tr>
-                                <th id="transactionDataHash">Txn Hash</th>
-                                <th id="minedInBlockIndex">Block</th>
-                                <th id="age">Age</th>
-                                <th id="from">From</th>
-                                <th id="to">To</th>
-                                <th id="value">Value</th>
-                                <th id="fee">Txn Fee</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="transaction in transactions" v-bind:key="transaction.transactionDataHash">
-                                <td class="truncate-td">
-                                    <router-link :to="'/explorer/transactions/' + transaction.transactionDataHash">
-                                        {{ transaction.transactionDataHash }}
-                                    </router-link>
-                                </td>
-                                <td>
-                                    <router-link :to="'/explorer/blocks/' + transaction.minedInBlockIndex">
-                                        {{ transaction.minedInBlockIndex }}
-                                    </router-link>
-                                </td>
-                                <td>
-                                    {{ transaction.age }}
-                                </td>
-                                <td class="truncate-td">
-                                    <router-link :to="'/explorer/address/' + transaction.from">
-                                        {{ transaction.from }}
-                                    </router-link>
-                                </td>
-                                <td class="truncate-td">
-                                    <router-link :to="'/explorer/address/' + transaction.to">
-                                        {{ transaction.to }}
-                                    </router-link>
-                                </td>
-                                <td>
-                                    {{ transaction.value }}
-                                </td>
-                                <td>
-                                    {{ transaction.fee }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
@@ -100,44 +101,6 @@
 
 <style scoped>
 
-    #transactionDataHash {
-        width: 12vw;
-    }
-
-    #minedInBlockIndex {
-        width: 1vw;
-    }
-
-    #age {
-        width: 5vw
-    }
-
-    #from {
-        width: 11vw;
-    }
-
-    #to {
-        width: 11vw;
-    }
-
-    #value {
-        width: 8vw;
-    }
-
-    #fee {
-        width: 3.5vw;
-    }
-
-
-    td {
-        max-width: 10px;
-    }
-
-    .truncate-td {
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-    }
 </style>
 
 <script>
