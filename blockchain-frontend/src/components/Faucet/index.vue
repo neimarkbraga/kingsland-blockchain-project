@@ -87,9 +87,13 @@
                 })
                 .then(function (response) {
                     console.log(response);
+                    //Notify Successful Sending of Balance
+                    //to corresponding address
                 })
                 .catch(function (error) {
                     console.log(error);
+                    // Notify Erroneuos Tx Sending
+                    // with corresponding Error Msg
                 });
             }
         },
