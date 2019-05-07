@@ -2,8 +2,6 @@ import Vue from 'vue';
 import Router from 'vue-router';
 Vue.use(Router);
 
-
-
 let router = new Router({
     mode: 'history',
     linkActiveClass: 'active',
@@ -17,10 +15,10 @@ let router = new Router({
             }
         },
         {
-            path: '/test',
+            path: '/faucet',
             component: resolve => {
-                require.ensure(['@/components/Home/test.vue'], () => {
-                    resolve(require('@/components/Home/test.vue'));
+                require.ensure(['@/components/Faucet/index.vue'], () => {
+                    resolve(require('@/components/Faucet/index.vue'));
                 });
             }
         },
