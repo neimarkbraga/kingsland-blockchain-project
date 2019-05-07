@@ -82,10 +82,19 @@ let router = new Router({
             }
         },
         {
-            path: '/explorer/address/:address',
+            name: 'address',
+            path: '/explorer/address/',
             component: resolve => {
                 require.ensure(['@/components/Explorer/Address/index.vue'], () => {
                     resolve(require('@/components/Explorer/Address/index.vue'));
+                });
+            }
+        },
+        {
+            path: '/explorer/address/:address',
+            component: resolve => {
+                require.ensure(['@/components/Explorer/Address/details.vue'], () => {
+                    resolve(require('@/components/Explorer/Address/details.vue'));
                 });
             }
         },

@@ -55,6 +55,16 @@
                     </router-link>
                 </div>
             </div>
+            <div class="row">
+                <div class="col s6">
+                    <router-link :to="{name: 'address'}" class="waves-effect waves-light btn-large blue w-100">
+                        Addresses
+                    </router-link>
+                </div>
+                <div class="col s6">
+
+                </div>
+            </div>
         </div>
     </div>
 </template>
