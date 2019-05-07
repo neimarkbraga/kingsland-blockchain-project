@@ -62,7 +62,9 @@
                     </router-link>
                 </div>
                 <div class="col s6">
-
+                    <router-link to="/explorer/peers" class="waves-effect waves-light btn-large blue w-100">
+                        Peers
+                    </router-link>
                 </div>
             </div>
         </div>

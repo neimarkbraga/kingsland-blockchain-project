@@ -108,6 +108,14 @@ let router = new Router({
             }
         },
         {
+            path: '/explorer/peers',
+            component: resolve => {
+                require.ensure(['@/components/Explorer/Peers/index.vue'], () => {
+                    resolve(require('@/components/Explorer/Peers/index.vue'));
+                });
+            }
+        },
+        {
             path: '*',
             component: resolve => {
                 require.ensure(['@/components/Errors/page_not_found.vue'], () => {
