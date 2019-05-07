@@ -117,7 +117,7 @@
                         break;
                     case 'transaction':
                         vm.$router.push({
-                            name: 'txhash',
+                            name: 'txDetails',
                             params: {
                                 txhash: response.data.data.transactionDataHash
                             }
