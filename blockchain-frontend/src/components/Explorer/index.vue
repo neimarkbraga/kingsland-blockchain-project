@@ -93,13 +93,48 @@
             };
         },
         methods: {
-            submitSearch() {
+            async submitSearch() {
                 let vm = this;
                 let status = vm.searchStatus;
                 try {
                     status.searching = true;
-                    status.error = 'This feature is not yet ready.';
-                    // code for search
+
+                    const url = window.APP_CONFIG.blockchain_node_url;
+                    const response = await axios.get(`${url}/search`, {
+                        params: {
+                            keyword: vm.searchForm.keyword
+                        }
+                    });
+
+                    switch(response.data.type) {
+                    case 'address':
+                        vm.$router.push({
+                            name: 'addressDetails',
+                            params: {
+                                address: response.data.data.address
+                            }
+                        });
+                        break;
+                    case 'transaction':
+                        vm.$router.push({
+                            name: 'txhash',
+                            params: {
+                                txhash: response.data.data.transactionDataHash
+                            }
+                        });
+                        break;
+                    case 'block':
+                        vm.$router.push({
+                            name: 'blockDetails',
+                            params: {
+                                index: response.data.data.index
+                            }
+                        });
+                        break;
+                    default:
+                        status.error = 'You have entered an Invalid Search Key.';
+                    }
+
                 }
                 catch (error) {
                     status.error = utils.getErrorMessage(error);

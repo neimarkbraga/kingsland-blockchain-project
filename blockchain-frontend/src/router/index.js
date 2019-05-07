@@ -74,6 +74,7 @@ let router = new Router({
             }
         },
         {
+            name: 'blockDetails',
             path: '/explorer/blocks/:index',
             component: resolve => {
                 require.ensure(['@/components/Explorer/Blocks/details.vue'], () => {
@@ -91,6 +92,7 @@ let router = new Router({
             }
         },
         {
+            name: 'addressDetails',
             path: '/explorer/address/:address',
             component: resolve => {
                 require.ensure(['@/components/Explorer/Address/details.vue'], () => {
