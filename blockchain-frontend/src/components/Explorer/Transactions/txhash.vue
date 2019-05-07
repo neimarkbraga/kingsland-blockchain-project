@@ -3,7 +3,12 @@
         <div class="row">
             <div class="col s12">
                 <router-link to="/explorer" class="breadcrumb dark">Explorer</router-link>
-                <router-link :to="{name: 'confirmed'}" class="breadcrumb dark">Confirmed Transactions</router-link>
+                <router-link :to="{name: 'confirmed'}" class="breadcrumb dark" v-if="transaction.minedInBlockIndex">
+                    Confirmed Transactions
+                </router-link>
+                <router-link :to="{name: 'pending'}" class="breadcrumb dark" v-else>
+                    Pending Transactions
+                </router-link>
                 <router-link :to="'/explorer/transactions/' + $route.params.txhash" class="breadcrumb dark">
                     {{ $route.params.txhash }}
                 </router-link>
@@ -45,7 +50,7 @@
                                     <td><b>Fee:</b></td>
                                     <td>{{ transaction.fee }}</td>
                                 </tr>
-                                <tr>
+                                <tr v-if="transaction.minedInBlockIndex">
                                     <td><b>Included in Block:</b></td>
                                     <td>
                                         <router-link :to="'/explorer/blocks/' + transaction.minedInBlockIndex">
