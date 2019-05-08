@@ -1,10 +1,5 @@
 <template>
     <div id="createWalletTab" class="row center-align">
-        <div class="row">
-            <div class="col s12">
-                <button class="btn-large blue center-align" v-on:click.prevent="generateWallet">Create New Wallet</button>
-            </div>
-        </div>
 
         <div class="row">
             <div class="col offset-s3 s6">
@@ -30,12 +25,20 @@
                 </div>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col s12">
+                <button class="btn-large blue center-align" v-on:click.prevent="generateWallet">Create New Wallet</button>
+            </div>
+        </div>
+        <p v-if="this.privKey" class="green-text dark-accent-4">Please store your private key in a secure place.</p>
+
     </div>
 </template>
 
 <style scoped>
     #createWalletTab {
-        padding-top: 29vh;
+        padding-top: 15vh;
     }
 </style>
 

@@ -1,41 +1,30 @@
 <template>
     <div id="sendTransactionTab" class="row center-align">
         <div class="row">
-            <div class="col offset-s4 s6">
+            <div class="col offset-s3 s6">
                 <span class="left">
                     <h5>
-                        Loaded Wallet Address:
-                    <i>
-                        {{ loadedAddress }}
-                    </i>
+                        Loaded Wallet Address: <i>{{ loadedAddress }}</i>
                     </h5>
                 </span>
             </div>
         </div>
         <div class="row">
-            <div class="input-field col offset-s4 s4">
+            <div class="input-field col offset-s3 s4">
                 <input id="Recipient" type="text" class="validate" name=Recipient v-model="recipient">
                 <label for="Recipient">Enter Recipient</label>
             </div>
-        </div>
-        <div class="row">
-            <div class="input-field col offset-s4 s4">
+            <div class="input-field col s2">
                 <input id="Value" type="text" class="validate" name=Value v-model="value">
                 <label for="Value">Enter Value</label>
             </div>
         </div>
         <div class="row">
-            <div class="input-field col offset-s4 s4">
+            <div class="input-field col offset-s3 s4">
                 <input id="Data" type="text" class="validate" name=Data v-model="data">
                 <label for="Data">Enter Data (optional)</label>
             </div>
-        </div>
-        <div class="row">
-            <button class="btn-large blue center-align" v-on:click.prevent="signTransaction">Sign Transaction</button>
-            <p v-if="status.error">{{status.error}}</p>
-        </div>
-        <div class="row">
-            <div class="input-field col offset-s4 s4">
+            <div class="input-field col s2">
                 <input id="Node" type="text" class="validate" name=Node v-model="node">
                 <label for="Node">Enter Blockchain Node</label>
             </div>
@@ -43,11 +32,18 @@
         <div class="row">
             <button class="btn-large blue center-align" v-on:click.prevent="sendTransaction">Send Transaction</button>
         </div>
+        <p v-if="status.error !== null" class="red-text darken-4">{{status.error}}</p>
+        <div v-else-if="status.success === true" class="green-text accent-4">
+            <h5>Transaction Sent!</h5>
+            <p><b>Transaction Hash:</b> <i>{{transactionDataHash}}</i></p>
+        </div>
     </div>
 </template>
 
 <style scoped>
-
+    #sendTransactionTab {
+        margin-top: 7vh;
+    }
 </style>
 
 
@@ -61,7 +57,8 @@
         data() {
             return {
                 status: {
-                    error: null
+                    error: null,
+                    success: null
                 },
 
                 recipient: null,
@@ -91,12 +88,30 @@
                     signature.s.toString(16)
                 ];
             },
-            signTransaction() {
+            AreInputsValid() {
                 if (!this.loadedPrivKey) {
                     this.status.error = 'Please Load a Wallet First';
-                    return;
+                    return false;
                 }
 
+                if (!this.recipient) {
+                    this.status.error = 'Please enter a recipient';
+                    return false;
+                }
+
+                if (!this.value) {
+                    this.status.error = 'Please enter an amount to send';
+                    return false;
+                }
+
+                if (!this.node) {
+                    this.status.error = 'Please enter a node';
+                    return false;
+                }
+
+                return true;
+            },
+            signTransaction() {
                 const transactionInfo = {
                     "from": this.loadedAddress,
                     "to": this.recipient,
@@ -129,6 +144,12 @@
                 return keyPair.verify(data, {r: signature[0], s: signature[1]});
             },
             async sendTransaction() {
+                if (!this.AreInputsValid()) {
+                    return;
+                }
+
+                this.signTransaction();
+
                 if (!this.isValidSignature(this.transactionDataHash,
                                            this.loadedPubKey,
                                            this.newTransaction.senderSignature)) {
@@ -138,14 +159,12 @@
                 try {
                     const response = axios.post(this.node + '/transactions/send', this.newTransaction);
                     window.localStorage.clear();
-                    console.log(response);
-                    // Notify Successful Tx Sending
-                    // with corresponding Tx Hash
+
+                    this.status.error = null;
+                    this.status.success = true;
                 }
                 catch (error) {
                     console.log(error);
-                    // Notify Erroneuos Tx Sending
-                    // with corresponding Error Msg
                 }
             },
         }

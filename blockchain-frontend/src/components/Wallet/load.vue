@@ -1,14 +1,5 @@
 <template>
     <div id="loadWalletTab" class="row center-align">
-        <div class="row">
-            <div class="input-field col offset-s4 s4">
-                <input id="privateKey" type="text" class="validate" name=privateKey v-model="inputPrivateKey">
-                <label for="privateKey">Enter Private Key</label>
-            </div>
-        </div>
-        <div class="row">
-            <button class="btn-large blue center-align" v-on:click.prevent="loadWallet">Load Existing Wallet</button>
-        </div>
 
         <div class="row">
             <div class="col offset-s3 s6">
@@ -34,12 +25,24 @@
                 </div>
             </div>
         </div>
+
+        <div class="row">
+            <div class="input-field col offset-s3 s6">
+                <input id="privateKey" type="text" class="validate" name=privateKey v-model="inputPrivateKey">
+                <label for="privateKey">Enter Private Key</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <button class="btn-large blue center-align" v-on:click.prevent="loadWallet">Load Existing Wallet</button>
+        </div>
+
     </div>
 </template>
 
 <style scoped>
     #loadWalletTab {
-        padding-top: 18vh;
+        padding-top: 15vh;
     }
 </style>
 
