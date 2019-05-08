@@ -13,8 +13,8 @@ commander.parse(process.argv);
 
 
 config.protocol = commander.protocol || config.protocol;
-config.host = commander.protocol || config.host;
-config.port = commander.protocol || config.port;
+config.host = commander.host || config.host;
+config.port = commander.port || config.port;
 config.address = commander.address || config.address;
 
 
@@ -83,4 +83,5 @@ let mine = async () => {
 };
 
 console.clear();
+console.log(`Node Url: ${nodeUrl}`);
 mine();

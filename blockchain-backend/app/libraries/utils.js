@@ -66,5 +66,10 @@ module.exports = {
         let keyPair = secp256k1.keyFromPrivate(privateKey);
         let signature = keyPair.sign(data);
         return [signature.r.toString(16), signature.s.toString(16)];
+    },
+    getISODatesSecondsDifference(date1, date2) {
+        date1 = new Date(date1);
+        date2 = new Date(date2);
+        return Math.abs((date2.getTime() - date1.getTime()) / 1000);
     }
 };

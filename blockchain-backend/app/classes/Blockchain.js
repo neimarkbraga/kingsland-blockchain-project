@@ -334,5 +334,29 @@ module.exports = class BlockChain {
         this.blocks.push(newBlock);
         this.miningJobs = {};
         this.pendingTransactions = [];
+
+        // dynamic difficulty
+        if(typeof config.target_block_time === 'number') {
+            // For example, if the target block time == 5 seconds
+            // For the next block, the difficulty can be dynamically adjusted:
+            //     If average block time for the entire chain < 5 → difficulty++
+            //     If average block time for the entire chain > 5 → difficulty--
+            let averageBlockTime = this.getAverageBlockTime();
+            if(averageBlockTime < 5) this.currentDifficulty++;
+            if(averageBlockTime > 5) this.currentDifficulty--;
+            if(this.currentDifficulty < 0) this.currentDifficulty = 0;
+        }
+    }
+
+    getAverageBlockTime() {
+        let count = 0;
+        let total = 0;
+        for(let i = 2; i < this.blocks.length; i++) {
+            let prevBlock = this.blocks[i - 1];
+            let currBlock = this.blocks[i];
+            total += utils.getISODatesSecondsDifference(prevBlock.dateCreated, currBlock.dateCreated);
+            count++;
+        }
+        return count? total / count : config.target_block_time;
     }
 };

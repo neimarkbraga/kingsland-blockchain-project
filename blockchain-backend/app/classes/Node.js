@@ -57,7 +57,8 @@ module.exports = class Node {
             blocksCount: this.chain.blocks.length,
             cumulativeDifficulty: this.chain.getCumulativeDifficulty(),
             confirmedTransactions: this.chain.getConfirmedTransactions().length,
-            pendingTransactions: this.chain.pendingTransactions.length
+            pendingTransactions: this.chain.pendingTransactions.length,
+            averageBlockTime: this.chain.getAverageBlockTime()
         };
     }
 
@@ -77,11 +78,17 @@ module.exports = class Node {
         let confirmedBalances = {};
         let validatedBlocks = [];
 
+        // for dynamic difficulty
+        let difficulty = config.start_difficulty;
+        let totalBlockTime = 0;
+        let blockTimeCount = 0;
+
         // Validate the genesis block → should be exactly the same
         if(JSON.stringify(BlockChain.createGenesisBlock()) !== JSON.stringify(Block.createFromJson(blocks[0]))) error('Genesis block did not match');
 
         // Validate each block from the first to the last
         for(let i = 0; i < blocks.length; i++) {
+            let prevBlock = blocks[i - 1];
             let block = blocks[i] = Block.createFromJson(blocks[i]);
             let minerMaxReward = config.block_reward;
             let minerReward = 0;
@@ -155,8 +162,20 @@ module.exports = class Node {
             if(!block.isValidHashDifficulty()) error(`Invalid block[${i}].blockHash difficulty`);
 
             // Validate that prevBlockHash == the hash of the previous block
-            if(!isGenesisBlock && block.prevBlockHash !== blocks[i - 1].blockHash) error(`block[${i}].prevBlockHash did not match`);
+            if(!isGenesisBlock && block.prevBlockHash !== prevBlock.blockHash) error(`block[${i}].prevBlockHash did not match`);
 
+            // Validate Difficulty
+            if(!isGenesisBlock && difficulty !== block.difficulty) error(`block[${i}].difficulty is not valid`);
+
+            // Dynamic Difficulty
+            if(typeof config.target_block_time === 'number' && i > 1) {
+                totalBlockTime += utils.getISODatesSecondsDifference(prevBlock.dateCreated, block.dateCreated);
+                blockTimeCount++;
+                let averageBlockTime = totalBlockTime / blockTimeCount;
+                if(averageBlockTime < 5) difficulty++;
+                if(averageBlockTime > 5) difficulty--;
+                if(difficulty < 0) difficulty = 0;
+            }
 
             // add to validated blocks
             validatedBlocks.push(block);

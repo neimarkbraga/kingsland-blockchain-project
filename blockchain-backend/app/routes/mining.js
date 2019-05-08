@@ -32,7 +32,7 @@ app.post('/submit-mined-block', async (req, res) => {
         let body = req.body;
         if(!body.blockDataHash) throw new Error('blockDataHash field is missing.');
         if(!body.dateCreated) throw new Error('dateCreated field is missing.');
-        if(!body.nonce) throw new Error('nonce field is missing.');
+        if(body.nonce === undefined) throw new Error('nonce field is missing.');
         if(!body.blockHash) throw new Error('blockHash field is missing.');
         if(!utils.isISO8601Date(body.dateCreated)) throw new Error('invalid dateCreated format.');
         body.nonce = Number(body.nonce);

@@ -1,5 +1,6 @@
 module.exports = {
-    genesis_date: '2018-01-01T00:00:00.000Z',
+    genesis_date: '2019-05-08T13:50:00.000Z',//'2018-01-01T00:00:00.000Z',
+    target_block_time: null, // seconds  (set null for static difficulty)
     start_difficulty: 4,
     safe_confirms: 6,
     block_reward: 5000000,
