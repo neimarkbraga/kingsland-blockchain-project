@@ -146,7 +146,7 @@
                     console.log(error);
                     // Notify Erroneuos Tx Sending
                     // with corresponding Error Msg
-                };
+                }
             },
         }
     }

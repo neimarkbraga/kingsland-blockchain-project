@@ -15,7 +15,9 @@
 
         <CheckBalanceTab></CheckBalanceTab>
 
-        <SendTransactionTab :loadedPrivKey=loadedPrivKey :loadedPubKey=loadedPubKey :loadedAddress=loadedAddress>
+        <SendTransactionTab :loadedPrivKey=loadedPrivKey
+                            :loadedPubKey=loadedPubKey
+                            :loadedAddress=loadedAddress>
 
         </SendTransactionTab>
 
@@ -60,11 +62,6 @@
 
 
 <script>
-    const axios = require('axios');
-    const crypto = require('crypto');
-    const elliptic = require('elliptic');
-    const secp256k1 = elliptic.ec('secp256k1');
-
     import CreateWalletTab from './create';
     import LoadWalletTab from './load';
     import CheckBalanceTab from './balance';
@@ -90,6 +87,8 @@
                this.loadedPrivKey = window.localStorage.getItem('privKey');
                this.loadedPubKey = window.localStorage.getItem('pubKey');
                this.loadedAddress = window.localStorage.getItem('address');
+               console.log('Wallet Loaded');
+
             }
         },
         mounted() {
