@@ -22,10 +22,6 @@ app.post('/', async (req, res) => {
         let body = req.body;
         let greedWatch = globals.faucetGreedWatch;
 
-        // validate address
-        if(!utils.isValidAddress(body.address)) throw new Error('Invalid Address');
-
-
         // validate captcha
         let response = await axios({
             method: 'post',
@@ -39,12 +35,17 @@ app.post('/', async (req, res) => {
         if(!data.success) throw new Error('Invalid captcha');
 
 
+        // validate address
+        if(!utils.isValidAddress(body.address)) throw new Error('Invalid Address');
+
+
         // validate if greedy
         greedWatch[body.address] = greedWatch[body.address] || createGreedWatch();
         if(new Date().getTime() >= greedWatch[body.address].expiration) greedWatch[body.address] = createGreedWatch();
-        if(greedWatch[body.address].requests >= 3) {
+        if(greedWatch[body.address].requests >= 1) {
             let minutes_left = greedWatch[body.address].expiration - new Date().getTime();
             minutes_left /= (1000 * 60);
+            minutes_left = Math.ceil(minutes_left);
             throw new Error(`Greedy user! Please try again after ${minutes_left} minutes`);
         }
 
