@@ -4,8 +4,8 @@
             <ul class="tabs">
                 <li class="tab col s3"><a href="#createWalletTab" class="active">Create Wallet</a></li>
                 <li class="tab col s3"><a href="#loadWalletTab">Load Wallet</a></li>
-                <li class="tab col s3"><a href="#checkBalanceTab">Check Balance</a></li>
                 <li class="tab col s3"><a href="#sendTransactionTab">Send Transaction</a></li>
+                <li class="tab col s3"><a href="#checkBalanceTab">Check Balance</a></li>
             </ul>
         </div>
 
@@ -13,13 +13,12 @@
 
         <LoadWalletTab @loadWallet = loadWallet></LoadWalletTab>
 
-        <CheckBalanceTab></CheckBalanceTab>
-
         <SendTransactionTab :loadedPrivKey=loadedPrivKey
                             :loadedPubKey=loadedPubKey
                             :loadedAddress=loadedAddress>
-
         </SendTransactionTab>
+
+        <CheckBalanceTab></CheckBalanceTab>
 
     </div>
 </template>

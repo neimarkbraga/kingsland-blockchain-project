@@ -88,7 +88,7 @@
                     signature.s.toString(16)
                 ];
             },
-            AreInputsValid() {
+            areInputsValid() {
                 if (!this.loadedPrivKey) {
                     this.status.error = 'Please Load a Wallet First';
                     return false;
@@ -144,7 +144,7 @@
                 return keyPair.verify(data, {r: signature[0], s: signature[1]});
             },
             async sendTransaction() {
-                if (!this.AreInputsValid()) {
+                if (!this.areInputsValid()) {
                     return;
                 }
 
@@ -153,7 +153,7 @@
                 if (!this.isValidSignature(this.transactionDataHash,
                                            this.loadedPubKey,
                                            this.newTransaction.senderSignature)) {
-                    return;
+                    this.status.error = 'There is a problem in signing the transaction';
                 }
 
                 try {
