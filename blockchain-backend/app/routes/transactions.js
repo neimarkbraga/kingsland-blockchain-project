@@ -15,7 +15,10 @@ app.get('/pending', (req, res) => {
 app.get('/:hash', (req, res) => {
     let hash = req.params.hash;
     let transaction = globals.node.chain.getTransactionByDataHash(hash);
-    if(transaction) res.json(transaction);
+    if(transaction) {
+        transaction.confirmations = transaction.getConfirmations(globals.node.chain.blocks.length);
+        res.json(transaction);
+    }
     else {
         res.status(404);
         res.json({
