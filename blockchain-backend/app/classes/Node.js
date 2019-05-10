@@ -47,6 +47,8 @@ module.exports = class Node {
     getInfo(options) {
         options = options || {};
         options.host = options.host || undefined;
+        options.requesterAddress = options.requesterAddress || undefined;
+
         return {
             about: 'kingsland-blockchain-project',
             nodeId: this.nodeId,
@@ -58,7 +60,8 @@ module.exports = class Node {
             cumulativeDifficulty: this.chain.getCumulativeDifficulty(),
             confirmedTransactions: this.chain.getConfirmedTransactions().length,
             pendingTransactions: this.chain.pendingTransactions.length,
-            averageBlockTime: this.chain.getAverageBlockTime()
+            averageBlockTime: this.chain.getAverageBlockTime(),
+            requesterAddress: options.requesterAddress? `${options.requesterAddress}` : undefined
         };
     }
 

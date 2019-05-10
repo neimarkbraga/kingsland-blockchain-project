@@ -17,8 +17,14 @@ app.post('/connect', async(req, res) => {
         await globals.node.syncPeerByInfo(info);
 
         // sync vice versa
-        try {await axios.post(`${info.nodeUrl}/peers/connect`, {peerUrl: globals.node.getUrl(req.headers.host)})} catch (error) {}
-
+        try {
+            let myUrl = globals.node.getUrl();
+            if(info.requesterAddress) {
+                myUrl = `${globals.node.protocol}://${info.requesterAddress}`;
+                if(globals.node.port) myUrl += `:${globals.node.port}`;
+            }
+            await axios.post(`${info.nodeUrl}/peers/connect`, {peerUrl: myUrl})
+        } catch (error) {}
         // try { await this.syncPeerByInfo(info); }
         // catch (error) { delete globals.node.peers[info.nodeId]; }
         res.json({message: `Connected to peer: ${body.peerUrl}`});

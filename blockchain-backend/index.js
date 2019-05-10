@@ -36,7 +36,7 @@ app.use('/faucet', require('./app/routes/faucet'));
 
 
 // start server
-let server = app.listen(commander.port || config.node_port, () => {
+let server = app.listen(commander.port || config.node_port, '0.0.0.0', () => {
     let address = server.address();
     console.log(`Server running @ port ${address.port}`);
 });

@@ -15,7 +15,8 @@ app.get('/test', async (req, res) => {
 
 app.get('/info', async (req, res) => {
     res.json(globals.node.getInfo({
-        host: req.headers.host
+        host: req.headers.host,
+        requesterAddress: req.connection.remoteAddress
     }));
 });
 
