@@ -1,4 +1,5 @@
 const express = require('express');
+const axios = require('axios');
 const globals = require('../../globals');
 const Block = require('../classes/Block');
 let app = express.Router();
@@ -14,6 +15,10 @@ app.post('/connect', async(req, res) => {
         if(!body.peerUrl) throw new Error('peerUrl is required');
         let info = await globals.node.addPeerByUrl(body.peerUrl);
         await globals.node.syncPeerByInfo(info);
+
+        // sync vice versa
+        try {await axios.post(`${info.nodeUrl}/peers/connect`, {peerUrl: globals.node.getUrl(req.headers.host)})} catch (error) {}
+
         // try { await this.syncPeerByInfo(info); }
         // catch (error) { delete globals.node.peers[info.nodeId]; }
         res.json({message: `Connected to peer: ${body.peerUrl}`});
