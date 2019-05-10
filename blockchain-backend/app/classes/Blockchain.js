@@ -268,6 +268,7 @@ module.exports = class BlockChain {
     }
 
     addBlock(newBlock) {
+        let self = this;
         let latestBlock = this.getLatestBlock();
         let confirmedBalances = this.getConfirmedBalances();
         let minerMaxReward = config.block_reward;
@@ -332,8 +333,14 @@ module.exports = class BlockChain {
         if(!newBlock.isValidHashDifficulty()) throw new Error('Invalid PoW');
 
         this.blocks.push(newBlock);
+
+        // remove mining jobs
         this.miningJobs = {};
-        this.pendingTransactions = [];
+
+        // remove pending transactions
+        newBlock.transactions.forEach(transaction => {
+            self.removePendingTransactionByHash(transaction.transactionDataHash);
+        });
 
         // dynamic difficulty
         if(typeof config.target_block_time === 'number') {
