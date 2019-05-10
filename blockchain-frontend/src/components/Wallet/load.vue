@@ -37,6 +37,7 @@
             <button class="btn-large blue center-align waves-effect waves-light" v-on:click.prevent="loadWallet">
                 Load Existing Wallet
             </button>
+            <p v-if="status.error !== null" class="red-text darken-4">{{status.error}}</p>
         </div>
 
     </div>
@@ -56,6 +57,9 @@
     export default {
         data() {
             return {
+                status: {
+                    error: null
+                },
                 inputPrivateKey: null,
                 privateKey: null,
                 publicKey: null,
@@ -75,7 +79,20 @@
             publicKeyToAddress(publicKey) {
                 return this.ripemd160(publicKey);
             },
+            isValidPrivateKey(key) {
+                if(typeof key !== 'string') return false;
+                if(key.length !== 64) return false;
+                return this.isHexString(key);
+            },
+             isHexString(hex) {
+                return /^[0-9a-f]+$/.test(hex);
+            },
             loadWallet() {
+                if (!this.isValidPrivateKey(this.inputPrivateKey)) {
+                    this.status.error = 'Please Input a Valid Private Key';
+                    return;
+                }
+
                 this.privateKey = this.inputPrivateKey;
                 this.publicKey  = this.privateKeyToPublicKey(this.privateKey);
                 this.address = this.publicKeyToAddress(this.publicKey);
