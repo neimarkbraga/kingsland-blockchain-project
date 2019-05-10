@@ -27,14 +27,20 @@ module.exports = class Node {
         }
     }
 
-    async notifyNewBlock(newBlock, host) {
+    async notifyNewBlock(newBlock) {
         for(let id in this.peers) {
-            let peerUrl = this.peers[id];
-            let data = this.getInfo({
-                host: host
-            });
-            data.newBlock = newBlock;
-            try { await axios.post(`${peerUrl}/peers/notify-new-block`, data); }
+            try {
+                let peerUrl = this.peers[id];
+                let peerInfo = (await axios.get(`${peerUrl}/info`)).data;
+                let host = undefined;
+                if(peerInfo.requesterAddress) {
+                    host = peerInfo.requesterAddress;
+                    if(this.port) host += `:${this.port}`;
+                }
+                let data = this.getInfo({ host: host });
+                data.newBlock = newBlock;
+                await axios.post(`${peerUrl}/peers/notify-new-block`, data);
+            }
             catch (error) { delete this.peers[id]; }
         }
         return true;
