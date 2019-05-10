@@ -44,6 +44,7 @@ app.post('/notify-new-block', async(req, res) => {
         if(body.newBlock) {
             try {
                 let candidateBlock = Block.createFromJson(body.newBlock);
+                globals.node.notifyNewBlock(candidateBlock);
                 globals.node.chain.addBlock(candidateBlock);
                 syncAllBlocks = false;
             } catch (error) { console.log(error); }
