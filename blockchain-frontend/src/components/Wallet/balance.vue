@@ -53,10 +53,14 @@
 
 <script>
     const axios = require('axios');
+    import utils from './../../library/utils';
 
     export default {
         data() {
             return {
+                status: {
+                    error: undefined
+                },
                 address: undefined,
                 node: undefined,
                 balance: undefined
@@ -69,7 +73,7 @@
                     this.balance = response.data;
                 }
                 catch (error) {
-                    console.log(error);
+                    this.status.error = utils.getErrorMessage(error);
                 }
             }
         }

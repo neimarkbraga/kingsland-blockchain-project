@@ -212,10 +212,6 @@ module.exports = class BlockChain {
         return undefined;
     }
 
-    getBlocks() {
-        return this.blocks;
-    }
-
     createCandidateBlock(address) {
         let newBlockIndex = this.blocks.length;
         let lastBlock = this.blocks[newBlockIndex - 1];
