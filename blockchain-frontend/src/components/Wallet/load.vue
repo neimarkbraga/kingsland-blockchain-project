@@ -37,7 +37,8 @@
             <button class="btn-large blue center-align waves-effect waves-light" v-on:click.prevent="loadWallet">
                 Load Existing Wallet
             </button>
-            <p v-if="status.error !== null" class="red-text darken-4">{{status.error}}</p>
+            <p v-if="status.success" class="green-text dark-accent-4">Wallet Successfully Loaded!</p>
+            <p v-else-if="status.error !== null" class="red-text darken-4">{{status.error}}</p>
         </div>
 
     </div>
@@ -58,7 +59,8 @@
         data() {
             return {
                 status: {
-                    error: null
+                    error: null,
+                    success: false,
                 },
                 inputPrivateKey: null,
                 privateKey: null,
@@ -101,6 +103,7 @@
                 window.localStorage.setItem('pubKey', this.publicKey);
                 window.localStorage.setItem('address', this.address);
 
+                this.status.success = true;
                 this.$emit('loadWallet');
             },
         }

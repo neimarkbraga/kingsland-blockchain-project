@@ -17,6 +17,8 @@
                 <button class="btn-large blue center-align waves-effect waves-light">
                     Check Balance
                 </button>
+                <p v-if="status.success" class="green-text dark-accent-4">Balance Successfully Retrieved!</p>
+                <p v-else-if="status.error !== null" class="red-text darken-4">{{status.error}}</p>
             </div>
         </form>
 
@@ -61,7 +63,8 @@
         data() {
             return {
                 status: {
-                    error: undefined
+                    error: undefined,
+                    success: false
                 },
                 address: undefined,
                 node: undefined,
@@ -69,9 +72,28 @@
             }
         },
         methods: {
+            isHexString(hex) {
+                return /^[0-9a-f]+$/.test(hex);
+            },
+            isValidAddress(address) {
+                if(typeof address !== 'string') return false;
+                if(address.length !== 40) return false;
+                return this.isHexString(address);
+            },
             async loadBalance() {
+                if (!this.isValidAddress(this.address)) {
+                    this.status.error = "Please enter a Valid Address";
+                    return;
+                }
+
+                if (!this.node) {
+                    this.status.error = "Please enter a Valid Node";
+                    return;
+                }
+
                 try {
                     const response = await axios.get(this.node + '/address/' + this.address + '/balance');
+                    this.status.success = true;
                     this.balance = response.data;
                 }
                 catch (error) {
