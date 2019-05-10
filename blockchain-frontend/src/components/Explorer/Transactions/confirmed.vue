@@ -56,7 +56,7 @@
                         </tr>
 
                         <!-- transactions -->
-                        <tr v-if="!isLoading && !errorMessage" v-for="transaction in transactions" v-bind:key="transaction.transactionDataHash">
+                        <tr v-show="!isLoading && !errorMessage" v-for="transaction in transactions" v-bind:key="transaction.transactionDataHash">
                             <td>
                                 <router-link :to="'/explorer/transactions/' + transaction.transactionDataHash">
                                     {{ transaction.transactionDataHash }}
