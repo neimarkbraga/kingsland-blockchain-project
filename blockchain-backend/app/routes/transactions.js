@@ -31,7 +31,7 @@ app.post('/send', async(req, res) => {
     try {
         let body = req.body;
         let transaction = globals.node.chain.createPendingTransaction(body);
-        globals.node.broadcastPendingTransaction(transaction);
+        await globals.node.broadcastPendingTransaction(transaction);
         res.json(transaction);
     }
     catch (error) {

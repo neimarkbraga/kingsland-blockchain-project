@@ -19,27 +19,26 @@ module.exports = class Node {
         this.chainId    = this.getChainId();
     }
 
-    broadcastPendingTransaction(transaction) {
+    async broadcastPendingTransaction(transaction) {
         for(let id in this.peers) {
             let peerUrl = this.peers[id];
             try { axios.post(`${peerUrl}/transactions/send`, transaction); }
             catch (error) {  }
         }
+        return true;
     }
 
     async notifyNewBlock(newBlock) {
         for(let id in this.peers) {
             try {
                 let peerUrl = this.peers[id];
+                let data = this.getInfo();
                 let peerInfo = (await axios.get(`${peerUrl}/info`)).data;
-                let host = undefined;
-                if(peerInfo.requesterAddress) {
-                    host = peerInfo.requesterAddress;
-                    if(this.port) host += `:${this.port}`;
-                }
-                let data = this.getInfo({ host: host });
+                if(peerInfo.requestAddress) data.nodeUrl = this.getUrl({
+                    host: peerInfo.requestAddress
+                });
                 data.newBlock = newBlock;
-                await axios.post(`${peerUrl}/peers/notify-new-block`, data);
+                try { await axios.post(`${peerUrl}/peers/notify-new-block`, data); } catch(error) {}
             }
             catch (error) { delete this.peers[id]; }
         }
@@ -50,16 +49,22 @@ module.exports = class Node {
         this.chain = new BlockChain();
     }
 
-    getInfo(options) {
-        options = options || {};
-        options.host = options.host || undefined;
-        options.requesterAddress = options.requesterAddress || undefined;
+    getInfo(req) {
+        let nodeUrl = this.selfUrl;
+        let requestAddress = undefined;
+        if(req) {
+            if(req.headers.host) nodeUrl = this.getUrl({
+                host: req.headers.host.split(':')[0],
+                port: req.headers.host.split(':')[1] || '',
+            });
+            requestAddress = req.connection.remoteAddress || undefined;
+        }
 
         return {
             about: 'kingsland-blockchain-project',
             nodeId: this.nodeId,
             chainId: this.chain.blocks[0].blockHash,
-            nodeUrl: options.host? this.getUrl(options.host) : this.selfUrl,
+            nodeUrl: nodeUrl,
             peers: Object.keys(this.peers).length,
             currentDifficulty: this.chain.currentDifficulty,
             blocksCount: this.chain.blocks.length,
@@ -67,15 +72,16 @@ module.exports = class Node {
             confirmedTransactions: this.chain.getConfirmedTransactions().length,
             pendingTransactions: this.chain.pendingTransactions.length,
             averageBlockTime: this.chain.getAverageBlockTime(),
-            requesterAddress: options.requesterAddress? `${options.requesterAddress}` : undefined
+            requestAddress: requestAddress
         };
     }
 
-    getUrl(host) {
-        if(host) return `${this.protocol}://${host}`;
-        let url = `${this.protocol}://${this.host}`;
-        if(this.port !== undefined) url += `:${this.port}`;
-        return url;
+    getUrl(options) {
+        options = options || {};
+        options.protocol = options.protocol || this.protocol;
+        options.host = options.host || this.host;
+        options.port = options.port === undefined? this.port : options.port;
+        return `${options.protocol}://${options.host}` + (options.port? `:${options.port}` : '');
     }
 
     getChainId() {
@@ -196,9 +202,10 @@ module.exports = class Node {
 
     async syncPeerByInfo(peerInfo) {
         let myInfo = this.getInfo();
+        let changeChain = peerInfo.cumulativeDifficulty > myInfo.cumulativeDifficulty;
 
         // sync blocks
-        if(peerInfo.cumulativeDifficulty > myInfo.cumulativeDifficulty) {
+        if(changeChain) {
             let peerBlocks = (await axios.get(`${peerInfo.nodeUrl}/blocks`)).data;
 
             // Re-calculate the cumulative difficulty of the incoming chain
@@ -214,32 +221,41 @@ module.exports = class Node {
             let pendingTransactions = (await axios.get(`${peerInfo.nodeUrl}/transactions/pending`)).data;
             for(let i = 0; i < pendingTransactions.length; i++) {
                 let pendingTransaction = pendingTransactions[i];
-                try { this.chain.createPendingTransaction(pendingTransaction) } catch (error) {}
+                try { this.chain.createPendingTransaction(pendingTransaction); } catch (error) {}
             }
         }
 
         // resolve promise
-        return true;
+        return changeChain;
     }
 
     async addPeerByUrl(url) {
         let myInfo = this.getInfo();
-        let response = await axios.get(`${url}/info`);
-        let data = response.data;
-        if(data.chainId !== myInfo.chainId) throw new Error('Chain ID did not match.');
-        if(data.nodeId === myInfo.nodeId) throw new Error('Cannot connect to self.');
-        if(this.peers[data.nodeId]) throw new Error(`Already connected to peer: ${url}`);
+        let peerInfo = (await axios.get(`${url}/info`)).data;
+
+        // validate chain id
+        if(peerInfo.chainId !== myInfo.chainId) throw new Error('Chain ID did not match.');
+
+        // validate node id
+        if(peerInfo.nodeId === myInfo.nodeId) throw new Error('Cannot connect to self.');
+        if(this.peers[peerInfo.nodeId]) throw new Error(`Already connected to peer: ${url}`);
 
         // eliminate url duplication
         for(let id in this.peers) if(this.peers[id] === url) delete this.peers[id];
 
         // add to peers
-        this.peers[data.nodeId] = url;
+        this.peers[peerInfo.nodeId] = url;
 
         // connect back
-        try { await axios.post(`${url}/peers/connect`, {peerUrl: this.selfUrl}); } catch (error) {}
+        try {
+            await axios.post(`${url}/peers/connect`, {
+                peerUrl: this.getUrl({
+                    host: peerInfo.requestAddress
+                })
+            });
+        } catch (error) {}
 
         // resolve promise
-        return data;
+        return peerInfo;
     }
 };

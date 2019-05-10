@@ -66,6 +66,7 @@ app.post('/', async (req, res) => {
         );
         transaction.sign(config.faucet_private_key);
         globals.node.chain.createPendingTransaction(transaction);
+        await globals.node.broadcastPendingTransaction(transaction);
         greedWatch[body.address].requests++;
 
         res.json({
