@@ -317,7 +317,10 @@ module.exports = class BlockChain {
             }
 
             let _transaction = this.getTransactionByDataHash(transaction.transactionDataHash);
-            if(_transaction && _transaction.isConfirmed()) throw new Error(`Invalid transaction[${i}] - duplicate`);
+            if(_transaction && _transaction.isConfirmed()) {
+                this.removePendingTransactionByHash(transaction.transactionDataHash);
+                throw new Error(`Invalid transaction[${i}] - duplicate`);
+            }
         }
         if(minerReward > minerMaxReward) error(`Invalid block[${i}] miner reward`);
 
