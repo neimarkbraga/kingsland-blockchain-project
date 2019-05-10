@@ -9,7 +9,7 @@
 
         <div class="row">
             <div class="col s12">
-                <table v-if="this.transactions" class="truncated-table striped centered">
+                <table class="truncated-table striped centered">
                     <thead>
                         <tr>
                             <th>Txn Hash</th>
@@ -23,7 +23,40 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="transaction in transactions" v-bind:key="transaction.transactionDataHash">
+
+                        <!-- loading -->
+                        <tr v-if="isLoading">
+                            <td colspan="8">
+                                <div class="preloader-wrapper small active">
+                                    <div class="spinner-layer spinner-blue-only">
+                                        <div class="circle-clipper left">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="gap-patch">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="circle-clipper right">
+                                            <div class="circle"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- error -->
+                        <tr v-if="!isLoading && errorMessage">
+                            <td colspan="8" class="red-text">
+                                <span>{{ errorMessage }}</span>
+                                <button type="button"
+                                        @click.prevent="loadConfirmedTxs"
+                                        class="btn btn-small ml-3">
+                                    Reload
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- transactions -->
+                        <tr v-if="!isLoading && !errorMessage" v-for="transaction in transactions" v-bind:key="transaction.transactionDataHash">
                             <td>
                                 <router-link :to="'/explorer/transactions/' + transaction.transactionDataHash">
                                     {{ transaction.transactionDataHash }}
@@ -71,41 +104,39 @@
     </div>
 </template>
 
-<style scoped>
-
-</style>
-
 <script>
     const axios = require('axios');
     const timeago = require('timeago.js');
+        import utils from '../../../library/utils';
 
     export default {
-
         name: "Confirmed",
         data() {
             return {
-                transactions: []
+                transactions: [],
+                isLoading: false,
+                errorMessage: ''
             }
         },
         created() {
-            console.log('Confirmed Txs Page Created');
             this.loadConfirmedTxs();
-
         },
         methods: {
             async loadConfirmedTxs() {
                 try {
+                    this.isLoading = true;
+                    this.errorMessage = '';
                     const url = window.APP_CONFIG.blockchain_node_url;
                     const response = await axios.get(`${url}/transactions/confirmed`);
                     this.transactions = response.data.reverse().map(transaction => {
                         transaction.age = timeago.format(transaction.dateCreated);
                         return transaction;
                     });
-
                 }
                 catch(error) {
-                    console.log(error);
+                    this.errorMessage = utils.getErrorMessage(error);
                 }
+                this.isLoading = false;
             }
         }
     }

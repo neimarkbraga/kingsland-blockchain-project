@@ -119,15 +119,14 @@
             async loadAddressInfo() {
                 try {
                     const url = window.APP_CONFIG.blockchain_node_url;
-                    const balanceResp = await axios.get(`${url}/address/${this.$route.params.address}/balance`)
-                    const transactionsResp = await axios.get(`${url}/address/${this.$route.params.address}/transactions`)
+                    const balanceResp = await axios.get(`${url}/address/${this.$route.params.address}/balance`);
+                    const transactionsResp = await axios.get(`${url}/address/${this.$route.params.address}/transactions`);
 
                     this.balance = balanceResp.data;
                     this.transactions = transactionsResp.data.reverse().map(transaction => {
                         transaction.age = timeago.format(transaction.dateCreated);
                         return transaction;
                     });
-
                 }
                 catch (error) {
                     console.log(error)

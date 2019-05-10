@@ -19,26 +19,65 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="transaction in transactions" v-bind:key="transaction.transactionDataHash">
-                            <td>
-                                <router-link :to="'/explorer/transactions/' + transaction.transactionDataHash">
-                                    {{ transaction.transactionDataHash }}
-                                </router-link>
+                        <!-- loading -->
+                        <tr v-if="isLoading">
+                            <td colspan="6">
+                                <div class="preloader-wrapper small active">
+                                    <div class="spinner-layer spinner-blue-only">
+                                        <div class="circle-clipper left">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="gap-patch">
+                                            <div class="circle"></div>
+                                        </div>
+                                        <div class="circle-clipper right">
+                                            <div class="circle"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
-                            <td>
-                                {{ transaction.age }}
+                        </tr>
+
+                        <!-- error -->
+                        <tr v-if="!isLoading && errorMessage">
+                            <td colspan="6" class="red-text">
+                                <span>{{ errorMessage }}</span>
+                                <button type="button"
+                                        @click.prevent="loadPendingTxs"
+                                        class="btn btn-small ml-3">
+                                    Reload
+                                </button>
                             </td>
-                            <td>
-                                {{ transaction.from }}
-                            </td>
-                            <td>
-                                {{ transaction.to }}
-                            </td>
-                            <td>
-                                {{ transaction.value }}
-                            </td>
-                            <td>
-                                {{ transaction.fee }}
+                        </tr>
+
+                        <!-- transactions -->
+                        <tr v-if="!isLoading && !errorMessage" v-for="transaction in transactions" v-bind:key="transaction.transactionDataHash">
+                                <td>
+                                    <router-link :to="'/explorer/transactions/' + transaction.transactionDataHash">
+                                        {{ transaction.transactionDataHash }}
+                                    </router-link>
+                                </td>
+                                <td>
+                                    {{ transaction.age }}
+                                </td>
+                                <td>
+                                    {{ transaction.from }}
+                                </td>
+                                <td>
+                                    {{ transaction.to }}
+                                </td>
+                                <td>
+                                    {{ transaction.value }}
+                                </td>
+                                <td>
+                                    {{ transaction.fee }}
+                                </td>
+                            </tr>
+
+                        <!-- no transactions -->
+                        <tr v-if="!isLoading && !errorMessage && !transactions.length">
+                            <td colspan="6">
+                                No Pending Transactions Yet
                             </td>
                         </tr>
                     </tbody>
@@ -54,33 +93,37 @@
 <script>
     const axios = require('axios');
     const timeago = require('timeago.js');
+    import utils from '../../../library/utils';
 
     export default {
 
         name: "Pending",
         data() {
             return {
-                transactions: undefined
+                transactions: [],
+                isLoading: false,
+                errorMessage: ''
             }
         },
         created() {
             this.loadPendingTxs();
-
         },
         methods: {
             async loadPendingTxs() {
                 try {
+                    this.isLoading = true;
+                    this.errorMessage = '';
                     const url = window.APP_CONFIG.blockchain_node_url;
                     const response = await axios.get(`${url}/transactions/pending`);
                     this.transactions = response.data.reverse().map(transaction => {
                         transaction.age = timeago.format(transaction.dateCreated);
                         return transaction;
                     });
-
                 }
                 catch(error) {
-                    console.log(error);
+                    this.errorMessage = utils.getErrorMessage(error);
                 }
+                this.isLoading = false;
             }
         }
     }

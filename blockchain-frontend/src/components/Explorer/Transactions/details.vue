@@ -139,6 +139,7 @@
         methods: {
             async loadTransaction() {
                 this.isLoading = true;
+                this.errorMessage = '';
                 try {
                     const url = window.APP_CONFIG.blockchain_node_url;
                     const response = await axios.get(`${url}/transactions/${this.$route.params.txhash}`);
