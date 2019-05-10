@@ -1,9 +1,14 @@
 const express = require('express');
 const globals = require('../../globals');
 const utils = require('../libraries/utils');
+const path = require('path');
 let app = express.Router();
 
 // endpoints here!
+app.get('/', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'index.html'));
+});
+
 app.get('/test', async (req, res) => {
     res.json('Hello World!');
 });

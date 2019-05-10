@@ -42,6 +42,9 @@ app.get('/random-wallet', (req, res) => {
 
 app.get('/mine/:minerAddress/:difficulty', async (req, res) => {
     try {
+        if(!utils.isValidAddress(req.params.minerAddress)) throw new Error('Invalid miner address');
+        if(!/^\d+$/.test(req.params.difficulty)) throw new Error('Invalid difficulty');
+
         let minerAddress = req.params.minerAddress;
         let difficulty = parseInt(req.params.difficulty);
         let candidateBlock = globals.node.chain.createCandidateBlock(minerAddress);
