@@ -15,14 +15,18 @@
                 <label for="Recipient">Enter Recipient</label>
             </div>
             <div class="input-field col s2">
-                <input id="Value" type="text" class="validate" name=Value v-model="value">
+                <input id="Value" type="number" min="1" class="validate" name=Value v-model="value">
                 <label for="Value">Enter Value</label>
             </div>
         </div>
         <div class="row">
-            <div class="input-field col offset-s3 s4">
+            <div class="input-field col offset-s3 s2">
                 <input id="Data" type="text" class="validate" name=Data v-model="data">
                 <label for="Data">Enter Data (optional)</label>
+            </div>
+            <div class="input-field col s2">
+                <input id="Fee" type="number" min="10" class="validate" name=Fee v-model="fee">
+                <label for="Fee">Enter Fee (Default: 10)</label>
             </div>
             <div class="input-field col s2">
                 <input id="Node" type="text" class="validate" name=Node v-model="node">
@@ -65,6 +69,7 @@
                 recipient: null,
                 value: null,
                 data: null,
+                fee: null,
                 node: null,
                 newTransaction: null,
                 transactionDataHash: null,
@@ -117,9 +122,9 @@
                     "from": this.loadedAddress,
                     "to": this.recipient,
                     "value": parseInt(this.value),
-                    "fee": 10,
+                    "fee": this.fee || 10,
                     "dateCreated": new Date().toISOString(),
-                    "data": "",
+                    "data": this.data,
                     "senderPubKey": this.loadedPubKey
                 }
 
