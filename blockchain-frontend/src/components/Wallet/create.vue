@@ -28,7 +28,10 @@
 
         <div class="row">
             <div class="col s12">
-                <button class="btn-large blue center-align" v-on:click.prevent="generateWallet">Create New Wallet</button>
+                <button class="btn-large blue center-align waves-effect waves-light"
+                        v-on:click.prevent="generateWallet">
+                    Create New Wallet
+                </button>
             </div>
         </div>
         <p v-if="this.privKey" class="green-text dark-accent-4">Please store your private key in a secure place.</p>

@@ -14,7 +14,9 @@
                 </div>
             </div>
             <div class="row">
-                <button class="btn-large blue center-align">Check Balance</button>
+                <button class="btn-large blue center-align waves-effect waves-light">
+                    Check Balance
+                </button>
             </div>
         </form>
 

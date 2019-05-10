@@ -34,7 +34,9 @@
         </div>
 
         <div class="row">
-            <button class="btn-large blue center-align" v-on:click.prevent="loadWallet">Load Existing Wallet</button>
+            <button class="btn-large blue center-align waves-effect waves-light" v-on:click.prevent="loadWallet">
+                Load Existing Wallet
+            </button>
         </div>
 
     </div>

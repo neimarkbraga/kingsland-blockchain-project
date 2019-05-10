@@ -30,7 +30,7 @@
             </div>
         </div>
         <div class="row">
-            <button class="btn-large blue center-align" v-on:click.prevent="sendTransaction">Send Transaction</button>
+            <button class="btn-large blue center-align waves-effect waves-light" v-on:click.prevent="sendTransaction">Send Transaction</button>
         </div>
         <p v-if="status.error !== null" class="red-text darken-4">{{status.error}}</p>
         <div v-else-if="status.success === true" class="green-text accent-4">
