@@ -14,7 +14,9 @@ app.get('/test', async (req, res) => {
 });
 
 app.get('/info', async (req, res) => {
-    res.json(globals.node.getInfo());
+    res.json(globals.node.getInfo({
+        host: req.headers.host
+    }));
 });
 
 app.get('/search', async (req, res) => {

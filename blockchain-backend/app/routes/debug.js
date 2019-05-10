@@ -49,7 +49,7 @@ app.get('/mine/:minerAddress/:difficulty', async (req, res) => {
         let miner = new Miner(minerAddress, difficulty);
         miner.mineBlock(candidateBlock);
         globals.node.chain.addBlock(candidateBlock);
-        await globals.node.notifyNewBlock(candidateBlock);
+        await globals.node.notifyNewBlock(candidateBlock, req.headers.host);
         res.json(candidateBlock);
     }
     catch (error) {

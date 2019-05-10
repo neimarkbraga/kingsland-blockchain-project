@@ -27,10 +27,12 @@ module.exports = class Node {
         }
     }
 
-    async notifyNewBlock(newBlock) {
+    async notifyNewBlock(newBlock, host) {
         for(let id in this.peers) {
             let peerUrl = this.peers[id];
-            let data = this.getInfo();
+            let data = this.getInfo({
+                host: host
+            });
             data.newBlock = newBlock;
             try { await axios.post(`${peerUrl}/peers/notify-new-block`, data); }
             catch (error) { delete this.peers[id]; }
@@ -42,12 +44,14 @@ module.exports = class Node {
         this.chain = new BlockChain();
     }
 
-    getInfo() {
+    getInfo(options) {
+        options = options || {};
+        options.host = options.host || undefined;
         return {
             about: 'kingsland-blockchain-project',
             nodeId: this.nodeId,
             chainId: this.chain.blocks[0].blockHash,
-            nodeUrl: this.selfUrl,
+            nodeUrl: options.host? this.getUrl(options.host) : this.selfUrl,
             peers: Object.keys(this.peers).length,
             currentDifficulty: this.chain.currentDifficulty,
             blocksCount: this.chain.blocks.length,
@@ -58,7 +62,8 @@ module.exports = class Node {
         };
     }
 
-    getUrl() {
+    getUrl(host) {
+        if(host) return `${this.protocol}://${host}`;
         let url = `${this.protocol}://${this.host}`;
         if(this.port !== undefined) url += `:${this.port}`;
         return url;

@@ -44,7 +44,7 @@ app.post('/submit-mined-block', async (req, res) => {
         candidate.dateCreated = body.dateCreated;
         candidate.calculateHash();
         globals.node.chain.addBlock(candidate);
-        await globals.node.notifyNewBlock(candidate);
+        await globals.node.notifyNewBlock(candidate, req.headers.host);
 
         res.json({
             message: `Block accepted, reward paid: ${candidate.transactions[0].value} microcoins`
