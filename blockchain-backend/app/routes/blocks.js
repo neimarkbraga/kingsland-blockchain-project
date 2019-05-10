@@ -5,7 +5,7 @@ let app = express.Router();
 
 // endpoints here!
 app.get('/', (req, res) => {
-    res.json(globals.node.chain.getBlocks());
+    res.json(globals.node.chain.blocks);
 });
 
 app.get('/:index', (req, res) => {

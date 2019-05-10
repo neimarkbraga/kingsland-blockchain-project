@@ -52,6 +52,7 @@
     const crypto = require('crypto');
     const elliptic = require('elliptic');
     const secp256k1 = elliptic.ec('secp256k1');
+    import utils from './../../library/utils';
 
     export default {
         data() {
@@ -157,14 +158,14 @@
                 }
 
                 try {
-                    const response = axios.post(this.node + '/transactions/send', this.newTransaction);
+                    await axios.post(this.node + '/transactions/send', this.newTransaction);
                     window.localStorage.clear();
 
                     this.status.error = null;
                     this.status.success = true;
                 }
                 catch (error) {
-                    console.log(error);
+                    this.status.error = utils.getErrorMessage(error);
                 }
             },
         }

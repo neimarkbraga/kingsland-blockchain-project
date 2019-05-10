@@ -38,10 +38,6 @@ module.exports = class Node {
         return true;
     }
 
-    getChain() {
-        return this.chain;
-    }
-
     resetChain() {
         this.chain = new BlockChain();
     }
