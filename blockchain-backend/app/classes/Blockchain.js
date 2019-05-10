@@ -330,6 +330,7 @@ module.exports = class BlockChain {
 
 
         if(newBlock.blockHash !== newBlock.getHash()) throw new Error(`Invalid block blockHash calculation`);
+        if(newBlock.difficulty !== this.currentDifficulty) throw new Error('Invalid block difficulty');
         if(!newBlock.isValidHashDifficulty()) throw new Error('Invalid PoW');
 
         this.blocks.push(newBlock);
