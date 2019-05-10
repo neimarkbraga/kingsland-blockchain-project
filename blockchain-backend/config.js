@@ -17,7 +17,7 @@ module.exports = {
     faucet_public_key: '5b48b72f8ce56444046e8e158aed06c4390c3ee121be97f18eff56c480f1e0990',
     faucet_address: '50e5f5d8d31566d759fce46b210c7ea88d303abb',
     faucet_init_value: 1000000000000,
-    faucet_tx_value: 500,
+    faucet_tx_value: 1000000,
     faucet_tx_fee: 10,
     faucet_tx_data: 'faucet tx',
 
