@@ -122,7 +122,7 @@
                     "from": this.loadedAddress,
                     "to": this.recipient,
                     "value": parseInt(this.value),
-                    "fee": this.fee || 10,
+                    "fee": parseInt(this.fee) || 10,
                     "dateCreated": new Date().toISOString(),
                     "data": this.data,
                     "senderPubKey": this.loadedPubKey
@@ -137,8 +137,6 @@
                     "transactionDataHash": this.transactionDataHash,
                     "senderSignature": senderSignature
                 }
-
-                //Notify Data Signed
             },
             getPublicKeyPoint(compressedPublicKey) {
                 let x = compressedPublicKey.substring(0, 64);
