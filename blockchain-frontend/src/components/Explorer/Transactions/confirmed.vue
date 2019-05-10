@@ -12,13 +12,14 @@
                 <table v-if="this.transactions" class="truncated-table striped centered">
                     <thead>
                         <tr>
-                            <th id="transactionDataHash">Txn Hash</th>
-                            <th id="minedInBlockIndex">Block</th>
-                            <th id="age">Age</th>
-                            <th id="from">From</th>
-                            <th id="to">To</th>
-                            <th id="value">Value</th>
-                            <th id="fee">Txn Fee</th>
+                            <th>Txn Hash</th>
+                            <th>Block</th>
+                            <th>Age</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Value</th>
+                            <th>Txn Fee</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -51,6 +52,16 @@
                             </td>
                             <td>
                                 {{ transaction.fee }}
+                            </td>
+                            <td>
+                                <span v-if="transaction.transferSuccessful"
+                                      class="new badge green accent-4"
+                                      data-badge-caption="Successful">
+                                </span>
+                                <span v-else
+                                      class="new badge red accent-4"
+                                      data-badge-caption="Failed">
+                                </span>
                             </td>
                         </tr>
                     </tbody>

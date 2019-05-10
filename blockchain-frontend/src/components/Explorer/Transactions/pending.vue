@@ -10,13 +10,12 @@
                 <table class="truncated-table striped centered">
                     <thead>
                         <tr>
-                            <th id="transactionDataHash">Txn Hash</th>
-                            <th id="minedInBlockIndex">Block</th>
-                            <th id="age">Age</th>
-                            <th id="from">From</th>
-                            <th id="to">To</th>
-                            <th id="value">Value</th>
-                            <th id="fee">Txn Fee</th>
+                            <th>Txn Hash</th>
+                            <th>Age</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Value</th>
+                            <th>Txn Fee</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -24,11 +23,6 @@
                             <td>
                                 <router-link :to="'/explorer/transactions/' + transaction.transactionDataHash">
                                     {{ transaction.transactionDataHash }}
-                                </router-link>
-                            </td>
-                            <td>
-                                <router-link :to="'/explorer/blocks/' + transaction.minedInBlockIndex">
-                                    {{ transaction.minedInBlockIndex }}
                                 </router-link>
                             </td>
                             <td>

@@ -54,7 +54,7 @@
                                     <td><b>Data:</b></td>
                                     <td>{{ transaction.data }}</td>
                                 </tr>
-                                <tr v-if="transaction.minedInBlockIndex === undefined">
+                                <tr v-if="transaction.minedInBlockIndex !== undefined">
                                     <td><b>Included in Block:</b></td>
                                     <td>
                                         <router-link :to="'/explorer/blocks/' + transaction.minedInBlockIndex">
@@ -62,10 +62,33 @@
                                         </router-link>
                                     </td>
                                 </tr>
+                                <tr v-if="transaction.confirmations !== 0">
+                                    <td><b>Confirmations:</b></td>
+                                    <td>{{ transaction.confirmations }}</td>
+                                </tr>
                                 <tr>
                                     <td><b>Date Created:</b></td>
                                     <td>{{ transaction.dateCreated }} ({{ transaction.age }})</td>
                                 </tr>
+
+                                <tr>
+                                    <td><b>Status:</b></td>
+                                    <td>
+                                        <span v-if="transaction.minedInBlockIndex === undefined"
+                                              class="new badge orange accent-4"
+                                              data-badge-caption="Pending">
+                                        </span>
+                                        <span v-else-if="transaction.transferSuccessful"
+                                              class="new badge green accent-4"
+                                              data-badge-caption="Successful">
+                                        </span>
+                                        <span v-else
+                                              class="new badge red accent-4"
+                                              data-badge-caption="Failed">
+                                        </span>
+                                    </td>
+                                </tr>
+
                             </tbody>
                         </table>
 
