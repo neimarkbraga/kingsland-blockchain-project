@@ -59,6 +59,9 @@
                 address: null,
             }
         },
+        mounted() {
+            window.localStorage.clear();
+        },
         methods: {
             generatePrivateKey() {
                 return secp256k1.genKeyPair().getPrivate().toString(16);

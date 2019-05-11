@@ -26,7 +26,7 @@
             </div>
             <div class="input-field col s2">
                 <input id="Fee" type="number" min="10" class="validate" name=Fee v-model="fee">
-                <label for="Fee">Enter Fee (Default: 10)</label>
+                <label for="Fee">Enter Fee (Minimum: 10)</label>
             </div>
             <div class="input-field col s2">
                 <input id="Node" type="text" class="validate" name=Node v-model="node">
@@ -69,12 +69,17 @@
                 recipient: null,
                 value: null,
                 data: null,
-                fee: null,
-                node: null,
+                fee: 10,
+                node: window.APP_CONFIG.blockchain_node_url,
                 newTransaction: null,
                 transactionDataHash: null,
                 signedTransaction: null,
             }
+        },
+        mounted() {
+            $(document).ready(function() {
+                M.updateTextFields();
+            });
         },
         props: [
             'loadedPrivKey',

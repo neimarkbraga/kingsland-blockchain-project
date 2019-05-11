@@ -3,7 +3,7 @@
         <form class="col s12" v-on:submit.prevent="loadBalance">
             <div class="row">
                 <div class="input-field col offset-s3 s6">
-                    <input id="Address" type="text" class="validate" name=Address v-model="address">
+                    <input id="Address" type="text" class="validate" name=Address v-model="address" placeholder="Address">
                     <label for="Address">Enter Address</label>
                 </div>
             </div>
@@ -66,10 +66,25 @@
                     error: undefined,
                     success: false
                 },
-                address: undefined,
-                node: undefined,
+                address: window.localStorage.getItem('address'),
+                node: window.APP_CONFIG.blockchain_node_url,
                 balance: undefined
             }
+        },
+        props: [
+            'loadedAddress'
+        ],
+        watch: {
+            loadedAddress: {
+                handler (newAddress) {
+                    this.address = newAddress;
+                }
+            }
+        },
+        mounted() {
+            $(document).ready(() => {
+                M.updateTextFields();
+            });
         },
         methods: {
             isHexString(hex) {

@@ -62,11 +62,16 @@
                     error: null,
                     success: false,
                 },
-                inputPrivateKey: null,
-                privateKey: null,
-                publicKey: null,
-                address: null,
+                inputPrivateKey: null || window.localStorage.getItem('privKey'),
+                privateKey: null || window.localStorage.getItem('privKey'),
+                publicKey: null || window.localStorage.getItem('pubKey'),
+                address: null || window.localStorage.getItem('address'),
             }
+        },
+        mounted() {
+            $(document).ready(function() {
+                M.updateTextFields();
+            });
         },
         methods: {
             privateKeyToPublicKey(privateKey) {

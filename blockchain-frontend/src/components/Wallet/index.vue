@@ -18,7 +18,8 @@
                             :loadedAddress=loadedAddress>
         </SendTransactionTab>
 
-        <CheckBalanceTab></CheckBalanceTab>
+        <CheckBalanceTab :loadedAddress=loadedAddress>
+        </CheckBalanceTab>
 
     </div>
 </template>
@@ -78,7 +79,7 @@
             return {
                 loadedPrivKey: null,
                 loadedPubKey: null,
-                loadedAddress: null
+                loadedAddress: null || window.localStorage.getItem('address')
             }
         },
         methods: {
@@ -86,8 +87,6 @@
                this.loadedPrivKey = window.localStorage.getItem('privKey');
                this.loadedPubKey = window.localStorage.getItem('pubKey');
                this.loadedAddress = window.localStorage.getItem('address');
-               console.log('Wallet Loaded');
-
             }
         },
         mounted() {
