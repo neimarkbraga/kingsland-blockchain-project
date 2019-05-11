@@ -60,7 +60,9 @@
             }
         },
         mounted() {
-            window.localStorage.clear();
+            window.localStorage.setItem('privKey', '');
+            window.localStorage.setItem('pubKey',  '');
+            window.localStorage.setItem('address', '');
         },
         methods: {
             generatePrivateKey() {
