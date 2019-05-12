@@ -353,6 +353,8 @@ module.exports = class BlockChain {
             if(averageBlockTime > 5) this.currentDifficulty--;
             if(this.currentDifficulty < 0) this.currentDifficulty = 0;
         }
+
+        return newBlock;
     }
 
     getAverageBlockTime() {
