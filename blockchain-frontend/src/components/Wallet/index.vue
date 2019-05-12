@@ -44,8 +44,8 @@
                             </ul>
                         </div>
 
-                        <tr v-if="isLoading">
-                            <td colspan="8" class="center">
+                        <div v-if="isLoadingBalances" class="center-align p-4">
+                            <div style="display: inline-block">
                                 <div class="preloader-wrapper small active">
                                     <div class="spinner-layer spinner-blue-only">
                                         <div class="circle-clipper left">
@@ -59,15 +59,27 @@
                                         </div>
                                     </div>
                                 </div>
-                            </td>
-                        </tr>
+                            </div>
+                        </div>
 
                         <div v-else>
-                            <i>{{ selectedWallet.address }}</i>
-                            <div class="row">
-                                <h4 class="center">
-                                    {{ safeBalance }} Coins
-                                </h4>
+
+                            <div v-if="balancesErrorMessage" class="p-4 center-align">
+                                <p class="mb-2 red-text">{{ balancesErrorMessage }}</p>
+                                <button type="button"
+                                        @click.prevent="loadBalance"
+                                        class="btn btn-small">
+                                    Reload
+                                </button>
+                            </div>
+
+                            <div v-else>
+                                <i>{{ selectedWallet.address }}</i>
+                                <div class="row">
+                                    <h4 class="center">
+                                        {{ safeBalance }} Coins
+                                    </h4>
+                                </div>
                             </div>
                         </div>
 
@@ -164,6 +176,7 @@
 <script>
     const axios = require('axios');
 
+    import utils from '../../library/utils';
     import BalanceModal from './balance-modal';
     import CreateModal from './create-modal';
     import LoadModal   from './load-modal';
@@ -183,16 +196,22 @@
                 wallets: [],
                 selectedWallet: null,
                 node: window.APP_CONFIG.blockchain_node_url,
-                isLoading: true,
+
+                // balances
+                isLoadingBalances: false,
+                balancesErrorMessage: '',
+                balancesCancelToken: axios.CancelToken.source(),
                 safeBalance: 0,
                 confirmedBalance: 0,
                 pendingBalance: 0,
+
+                // transactions
+                isLoading: false,
                 transactions: [],
             }
         },
         methods: {
             selectWallet(wallet) {
-                this.showPrivateKey = false;
                 this.selectedWallet = wallet;
                 window.localStorage.setItem('selectedWalletIndex', JSON.stringify(this.wallets.indexOf(wallet)));
             },
@@ -220,18 +239,31 @@
                     this.wallets = [];
                 }
             },
-            async loadBalance() {
-                try {
-                    const response = await axios.get(this.node + '/address/' + this.selectedWallet.address + '/balance');
-                    const balance = response.data;
-                    this.safeBalance = balance.safeBalance;
-                    this.confirmedBalance = balance.confirmedBalance;
-                    this.pendingBalance = balance.pendingBalance;
-                    this.isLoading = false;
-                }
-                catch(error) {
-                    console.log(error);
-                }
+            loadBalance() {
+                let vm = this;
+                vm.balancesCancelToken.cancel();
+
+                // set timeout to finish cancel task
+                setTimeout(async () => {
+                    try {
+                        vm.balancesCancelToken = axios.CancelToken.source(); // recreate cancel token
+                        vm.isLoadingBalances = true; // start loading
+                        vm.balancesErrorMessage = ''; // reset error message
+                        const response = await axios.get(vm.node + '/address/' + vm.selectedWallet.address + '/balance', {
+                            cancelToken: vm.balancesCancelToken.token
+                        });
+                        const balance = response.data;
+                        vm.safeBalance = balance.safeBalance;
+                        vm.confirmedBalance = balance.confirmedBalance;
+                        vm.pendingBalance = balance.pendingBalance;
+                    }
+                    catch(error) {
+                        if(!axios.isCancel(error)) vm.balancesErrorMessage = utils.getErrorMessage(error);
+                    }
+
+                    // end loading no matter what
+                    vm.isLoadingBalances = false;
+                });
             },
             async loadTransactions() {
                 try {
@@ -258,11 +290,6 @@
                     this.saveWallets();
                     this.selectWallet(this.wallets[this.wallets.length-1]);
                 }
-            }
-        },
-        watch: {
-            selectedWallet: () => {
-                this.loadBalance();
             }
         },
         created() {
