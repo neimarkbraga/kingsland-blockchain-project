@@ -39,6 +39,7 @@ app.get('/random-wallet', (req, res) => {
 });
 
 app.get('/mine/:minerAddress/:difficulty', async (req, res) => {
+    console.log('A Block was mined and submitted by debug.');
     try {
         if(!utils.isValidAddress(req.params.minerAddress)) throw new Error('Invalid miner address');
         if(!/^\d+$/.test(req.params.difficulty)) throw new Error('Invalid difficulty');
@@ -48,7 +49,7 @@ app.get('/mine/:minerAddress/:difficulty', async (req, res) => {
         let candidateBlock = globals.node.chain.createCandidateBlock(minerAddress);
         let miner = new Miner(minerAddress, difficulty);
         miner.mineBlock(candidateBlock);
-        await globals.node.chain.addBlock(candidateBlock);
+        globals.node.chain.addBlock(candidateBlock);
         await globals.node.notifyNewBlock(candidateBlock);
         res.json(candidateBlock);
     }

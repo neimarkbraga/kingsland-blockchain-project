@@ -214,6 +214,7 @@ module.exports = class Node {
             // Clear all current mining jobs (because they are invalid)
             this.chain.blocks = this.validatePeerJsonBlocks(peerBlocks);
             this.chain.miningJobs = {};
+            console.log('Chain was replaced by peer\'s chain.');
         }
 
         // sync pending transactions

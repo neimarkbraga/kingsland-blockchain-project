@@ -28,6 +28,7 @@ app.get('/get-mining-job/:minerAddress', (req, res) => {
 });
 
 app.post('/submit-mined-block', async (req, res) => {
+    console.log('A miner submitted new block.');
     try {
         let body = req.body;
         if(!body.blockDataHash) throw new Error('blockDataHash field is missing.');
@@ -43,7 +44,7 @@ app.post('/submit-mined-block', async (req, res) => {
         candidate.nonce = body.nonce;
         candidate.dateCreated = body.dateCreated;
         candidate.calculateHash();
-        await globals.node.chain.addBlock(candidate);
+        globals.node.chain.addBlock(candidate);
         await globals.node.notifyNewBlock(candidate);
 
         res.json({
@@ -51,6 +52,7 @@ app.post('/submit-mined-block', async (req, res) => {
         });
     }
     catch (error) {
+        console.log('A block submitted by miner was rejected.');
         res.status(400);
         res.json({
             errorMsg: error.message || 'Something went wrong'

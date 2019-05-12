@@ -263,7 +263,7 @@ module.exports = class BlockChain {
         return candidateBlock;
     }
 
-    async addBlock(newBlock) {
+    addBlock(newBlock) {
         let self = this;
         let latestBlock = this.getLatestBlock();
         let confirmedBalances = this.getConfirmedBalances();
@@ -354,6 +354,7 @@ module.exports = class BlockChain {
             if(this.currentDifficulty < 0) this.currentDifficulty = 0;
         }
 
+        console.log('A new block was added to chain.');
         return newBlock;
     }
 

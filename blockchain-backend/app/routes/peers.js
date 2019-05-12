@@ -26,23 +26,25 @@ app.post('/connect', async(req, res) => {
 });
 
 app.post('/notify-new-block', async(req, res) => {
+    console.log('A new block notification was received from a peer.');
     try {
         let body = req.body;
         let syncAllBlocks = true;
         if(body.newBlock) {
             try {
                 let candidateBlock = Block.createFromJson(body.newBlock);
-                await globals.node.chain.addBlock(candidateBlock);
+                globals.node.chain.addBlock(candidateBlock);
                 await globals.node.notifyNewBlock(candidateBlock);
                 syncAllBlocks = false;
-            } catch (error) { console.log(error); }
+            } catch (error) { }
         }
         if(syncAllBlocks) {
             let chainChanged = await globals.node.syncPeerByInfo(body);
             if(chainChanged) await globals.node.notifyNewBlock();
         }
+        try {await globals.node.addPeerByUrl(body.nodeUrl);} catch (error) {}
     }
-    catch (error) { console.log(error); }
+    catch (error) { }
     res.json({ message: 'Thank you for the notification.' });
 });
 
