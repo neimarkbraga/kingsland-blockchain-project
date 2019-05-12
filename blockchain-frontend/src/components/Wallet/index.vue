@@ -151,7 +151,8 @@
     }
 
     .modal {
-        width: 50% !important;
+        width: 60% !important;
+        min-width: 500px;
     }
 
     #wallet-list {
@@ -244,7 +245,7 @@
             },
             renameSelectedWallet() {
                 const newName = window.prompt('Enter new name', this.selectedWallet.name);
-                if (newName) {
+                if (!newName) {
                     return;
                 }
                 this.selectedWallet.name = newName;
@@ -279,6 +280,13 @@
                 constrainWidth: false
             });
             M.updateTextFields();
+        },
+        watch: {
+            selectedWallet: function() {
+                if (this.selectedWallet) {
+                    this.loadBalance();
+                }
+            }
         },
     }
 </script>
