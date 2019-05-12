@@ -36,13 +36,15 @@ app.post('/notify-new-block', async(req, res) => {
                 globals.node.chain.addBlock(candidateBlock);
                 await globals.node.notifyNewBlock(candidateBlock);
                 syncAllBlocks = false;
-            } catch (error) { }
-        }
-        if(syncAllBlocks) {
-            let chainChanged = await globals.node.syncPeerByInfo(body);
-            if(chainChanged) await globals.node.notifyNewBlock();
+            } catch (error) {}
         }
         try {await globals.node.addPeerByUrl(body.nodeUrl);} catch (error) {}
+        if(syncAllBlocks) {
+            console.log('Syncing to peer\'s chain.');
+            let chainChanged = await globals.node.syncPeerByInfo(body);
+            if(chainChanged) await globals.node.notifyNewBlock();
+            else console.log('Chain is already synced to peer\'s chain.');
+        }
     }
     catch (error) { }
     res.json({ message: 'Thank you for the notification.' });
