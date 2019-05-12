@@ -43,7 +43,7 @@ app.post('/submit-mined-block', async (req, res) => {
         candidate.nonce = body.nonce;
         candidate.dateCreated = body.dateCreated;
         candidate.calculateHash();
-        globals.node.chain.addBlock(candidate);
+        await globals.node.chain.addBlock(candidate);
         await globals.node.notifyNewBlock(candidate);
 
         res.json({

@@ -48,7 +48,7 @@ app.get('/mine/:minerAddress/:difficulty', async (req, res) => {
         let candidateBlock = globals.node.chain.createCandidateBlock(minerAddress);
         let miner = new Miner(minerAddress, difficulty);
         miner.mineBlock(candidateBlock);
-        globals.node.chain.addBlock(candidateBlock);
+        await globals.node.chain.addBlock(candidateBlock);
         await globals.node.notifyNewBlock(candidateBlock);
         res.json(candidateBlock);
     }

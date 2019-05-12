@@ -263,7 +263,7 @@ module.exports = class BlockChain {
         return candidateBlock;
     }
 
-    addBlock(newBlock) {
+    async addBlock(newBlock) {
         let self = this;
         let latestBlock = this.getLatestBlock();
         let confirmedBalances = this.getConfirmedBalances();
