@@ -32,7 +32,6 @@
             <button class="modal-close waves-effect waves-blue btn-flat">Cancel</button>
             <button @click.prevent="submitForm" class="waves-effect waves-blue btn-flat">Load</button>
         </div>
-        <
     </div>
 </template>
 

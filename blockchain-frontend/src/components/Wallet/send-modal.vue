@@ -40,9 +40,7 @@
 </template>
 
 <style scoped>
-    #sendTransactionTab {
-        margin-top: 7vh;
-    }
+
 </style>
 
 

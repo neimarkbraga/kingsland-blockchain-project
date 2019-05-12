@@ -151,7 +151,7 @@
     }
 
     .modal {
-        width: 35% !important;
+        width: 50% !important;
     }
 
     #wallet-list {
@@ -243,7 +243,11 @@
                 }
             },
             renameSelectedWallet() {
-                this.selectedWallet.name = window.prompt('Enter new name', this.selectedWallet.name);
+                const newName = window.prompt('Enter new name', this.selectedWallet.name);
+                if (newName) {
+                    return;
+                }
+                this.selectedWallet.name = newName;
                 this.saveWallets();
             },
             removeSelectedWallet() {
@@ -253,6 +257,11 @@
                     this.saveWallets();
                     this.selectWallet(this.wallets[this.wallets.length-1]);
                 }
+            }
+        },
+        watch: {
+            selectedWallet: () => {
+                this.loadBalance();
             }
         },
         created() {
