@@ -218,6 +218,7 @@ module.exports = class Node {
 
         // sync pending transactions
         if(peerInfo.pendingTransactions) {
+            if(changeChain) this.chain.pendingTransactions = [];
             let pendingTransactions = (await axios.get(`${peerInfo.nodeUrl}/transactions/pending`)).data;
             for(let i = 0; i < pendingTransactions.length; i++) {
                 let pendingTransaction = pendingTransactions[i];
