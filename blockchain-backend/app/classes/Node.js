@@ -46,6 +46,7 @@ module.exports = class Node {
     }
 
     resetChain() {
+        console.log('DEBUG: CHAIN RESET!');
         this.chain = new BlockChain();
     }
 
@@ -247,6 +248,7 @@ module.exports = class Node {
 
         // add to peers
         this.peers[peerInfo.nodeId] = url;
+        console.log(`Connected to a new peer: ${url}`);
 
         // connect back
         try {

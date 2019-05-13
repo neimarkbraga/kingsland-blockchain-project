@@ -75,6 +75,8 @@ module.exports = class BlockChain {
         if(this.getTransactionByDataHash(transaction.transactionDataHash)) throw new Error('Transaction duplicate detected.');
 
         this.pendingTransactions.push(transaction);
+
+        console.log('A new transaction was added to pending transactions.');
         return transaction;
     }
 
@@ -260,6 +262,7 @@ module.exports = class BlockChain {
         );
         this.miningJobs[candidateBlock.blockDataHash] = candidateBlock;
 
+        console.log('A candidate block was created.');
         return candidateBlock;
     }
 
