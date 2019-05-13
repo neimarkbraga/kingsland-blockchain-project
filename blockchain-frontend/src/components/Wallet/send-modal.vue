@@ -127,7 +127,7 @@
                     "value": parseInt(this.transaction.value),
                     "fee": parseInt(this.transaction.fee) || 10,
                     "dateCreated": new Date().toISOString(),
-                    "data": this.data,
+                    "data": this.transaction.data,
                     "senderPubKey": this.publicKey
                 };
 
@@ -149,16 +149,15 @@
                 if (!this.areInputsValid()) {
                     return;
                 }
-
-                this.signTransaction();
-
-                if (!this.isValidSignature(this.transactionDataHash,
-                                           this.publicKey,
-                                           this.newTransaction.senderSignature)) {
-                    this.status.error = 'There is a problem in signing the transaction';
-                }
-
                 try {
+                    this.signTransaction();
+                    if (!this.isValidSignature(this.transactionDataHash,
+                            this.publicKey,
+                            this.newTransaction.senderSignature)) {
+                        this.status.error = 'There is a problem in signing the transaction';
+                        return;
+                    }
+
                     await axios.post(this.node + '/transactions/send', this.newTransaction);
 
                     this.status.error = null;
