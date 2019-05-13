@@ -49,6 +49,7 @@ module.exports = class BlockChain {
         if(!utils.isValidPublicKey(data.senderPubKey)) throw new Error(`Invalid senderPubKey ${data.senderPubKey}`);
         if(utils.publicKeyToAddress(data.senderPubKey) !== data.from) throw new Error(`Wrong senderPubKey ${data.senderPubKey}`);
         if(!Array.isArray(data.senderSignature)) throw new Error(`Invalid senderSignature format: ${data.senderSignature}`);
+        if(data.fee < 10) throw new Error('Fee must be at least 10');
 
         let transaction = new Transaction(
             data.from,
@@ -222,6 +223,8 @@ module.exports = class BlockChain {
         let finalTxs = [coinbaseTx];
         let balances = this.getConfirmedBalances();
 
+        // prioritize pending tx with highest fee
+        pendingTxs.sort((a, b) => b.fee - a.fee);
 
         // determine if transfer is successful
         for(let i = 0; i < pendingTxs.length; i++) {
