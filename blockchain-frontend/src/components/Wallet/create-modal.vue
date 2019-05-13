@@ -71,9 +71,9 @@
                         if(form.name === wallet.name) throw new Error('Wallet name already taken');
                     }
 
-                    const privateKey = utils.generatePrivateKey();
-                    const publicKey  = utils.privateKeyToPublicKey(privateKey);
-                    const address    = utils.publicKeyToAddress(publicKey);
+                    let privateKey = utils.generatePrivateKey();
+                    let publicKey  = utils.privateKeyToPublicKey(privateKey);
+                    let address    = utils.publicKeyToAddress(publicKey);
 
                     this.$emit('newWallet', {
                         name: form.name,

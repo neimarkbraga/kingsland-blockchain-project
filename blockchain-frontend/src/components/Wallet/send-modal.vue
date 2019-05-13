@@ -121,7 +121,7 @@
                 return true;
             },
             signTransaction() {
-                const transactionInfo = {
+                let transactionInfo = {
                     "from": this.address,
                     "to": this.transaction.recipient,
                     "value": parseInt(this.transaction.value),
@@ -129,11 +129,11 @@
                     "dateCreated": new Date().toISOString(),
                     "data": this.data,
                     "senderPubKey": this.publicKey
-                }
+                };
 
                 this.transactionDataHash = utils.sha256(JSON.stringify(transactionInfo))
 
-                const senderSignature = utils.signData(this.transactionDataHash, this.privateKey);
+                let senderSignature = utils.signData(this.transactionDataHash, this.privateKey);
 
                 this.newTransaction = {
                    ...transactionInfo,

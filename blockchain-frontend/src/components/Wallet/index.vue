@@ -249,10 +249,10 @@
                         vm.balancesCancelToken = axios.CancelToken.source(); // recreate cancel token
                         vm.isLoadingBalances = true; // start loading
                         vm.balancesErrorMessage = ''; // reset error message
-                        const response = await axios.get(vm.node + '/address/' + vm.selectedWallet.address + '/balance', {
+                        let response = await axios.get(vm.node + '/address/' + vm.selectedWallet.address + '/balance', {
                             cancelToken: vm.balancesCancelToken.token
                         });
-                        const balance = response.data;
+                        let balance = response.data;
                         vm.safeBalance = balance.safeBalance;
                         vm.confirmedBalance = balance.confirmedBalance;
                         vm.pendingBalance = balance.pendingBalance;
@@ -267,7 +267,7 @@
             },
             async loadTransactions() {
                 try {
-                    const response = await axios.get(this.node + '/address/' + this.selectedWallet.address + '/transactions');
+                    let response = await axios.get(this.node + '/address/' + this.selectedWallet.address + '/transactions');
                     this.transactions = response.data;
                     this.isLoading = false;
                 }
@@ -276,7 +276,7 @@
                 }
             },
             renameSelectedWallet() {
-                const newName = window.prompt('Enter new name', this.selectedWallet.name);
+                let newName = window.prompt('Enter new name', this.selectedWallet.name);
                 if (!newName) {
                     return;
                 }
