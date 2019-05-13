@@ -77,7 +77,7 @@
                                 <i>{{ selectedWallet.address }}</i>
                                 <div class="row">
                                     <h4 class="center">
-                                        {{ safeBalance }} Coins
+                                        {{ confirmedBalance }} <span>&micro;</span>Coins
                                     </h4>
                                 </div>
                             </div>
