@@ -69,7 +69,6 @@
                             <div class="center-align">
                                 <button type="submit" class="btn blue">
                                     <span>Send{{ isSending? 'ing' : '' }} </span>
-                                    <i>5000000</i>
                                     <span> microCoins</span>
                                 </button>
                             </div>
